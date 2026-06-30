@@ -11,6 +11,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<UserTypeService>();
+builder.Services.AddScoped<UserAddressService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

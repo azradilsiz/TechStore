@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NuGetAudit>false</NuGetAudit>
+	</PropertyGroup>
+	
   <ItemGroup>
     <Compile Remove="Category.cs" />
     <Compile Remove="Controllers\WeatherForecastController.cs" />

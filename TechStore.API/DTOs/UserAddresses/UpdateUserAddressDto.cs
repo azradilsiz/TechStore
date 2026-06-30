@@ -1,0 +1,15 @@
+﻿namespace TechStore.API.DTOs.UserAddresses
+{
+    public class UpdateUserAddressDto
+    {
+        public string City { get; set; } = string.Empty;
+
+        public string District { get; set; } = string.Empty;
+
+        public string AddressDetail { get; set; } = string.Empty;
+
+        public string Phone { get; set; } = string.Empty;
+
+        public string Title { get; set; } = string.Empty;
+    }
+}

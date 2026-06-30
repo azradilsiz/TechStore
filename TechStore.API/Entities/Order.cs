@@ -8,7 +8,7 @@
         public int UserAddressId { get; set; }
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public User? User { get; set; }
 
         public UserAddress? UserAddress { get; set; }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TechStore.API.DTOs;
+using TechStore.API.DTOs.Categories;
 using TechStore.API.Services;
 
 namespace TechStore.API.Controllers

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TechStore.API.Data;
-using TechStore.API.DTOs;
+using TechStore.API.DTOs.Categories;
 using TechStore.API.Entities;
 
 namespace TechStore.API.Services

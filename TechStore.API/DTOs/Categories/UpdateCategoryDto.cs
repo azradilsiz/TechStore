@@ -1,4 +1,4 @@
-﻿namespace TechStore.API.DTOs
+﻿namespace TechStore.API.DTOs.Categories
 {
     public class UpdateCategoryDto
     {
