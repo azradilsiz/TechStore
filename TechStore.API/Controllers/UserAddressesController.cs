@@ -23,10 +23,10 @@ namespace TechStore.API.Controllers
             return Ok(addresses);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserAddressById(int id)
+        [HttpGet("{userAddressId}")]
+        public async Task<IActionResult> GetUserAddressById(int userAddressId)
         {
-            var address = await _userAddressService.GetUserAddressByIdAsync(id);
+            var address = await _userAddressService.GetUserAddressByIdAsync(userAddressId);
 
             if (address == null)
             {
@@ -69,11 +69,11 @@ namespace TechStore.API.Controllers
 
             var address = await _userAddressService.CreateUserAddressAsync(dto);
 
-            return CreatedAtAction(nameof(GetUserAddressById), new { id = address.Id }, address);
+            return CreatedAtAction(nameof(GetUserAddressById), new { userAddressId = address.Id }, address);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUserAddress(int id, UpdateUserAddressDto dto)
+        [HttpPut("{userAddressId}")]
+        public async Task<IActionResult> UpdateUserAddress(int userAddressId, UpdateUserAddressDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.City))
             {
@@ -90,7 +90,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Address detail cannot be empty.");
             }
 
-            var result = await _userAddressService.UpdateUserAddressAsync(id, dto);
+            var result = await _userAddressService.UpdateUserAddressAsync(userAddressId, dto);
 
             if (!result)
             {
@@ -100,10 +100,10 @@ namespace TechStore.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserAddress(int id)
+        [HttpDelete("{userAddressId}")]
+        public async Task<IActionResult> DeleteUserAddress(int userAddressId)
         {
-            var result = await _userAddressService.DeleteUserAddressAsync(id);
+            var result = await _userAddressService.DeleteUserAddressAsync(userAddressId);
 
             if (!result)
             {

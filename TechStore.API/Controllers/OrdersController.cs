@@ -23,10 +23,10 @@ namespace TechStore.API.Controllers
             return Ok(orders);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrderById(int id)
+        [HttpGet("{orderId}")]
+        public async Task<IActionResult> GetOrderById(int orderId)
         {
-            var order = await _orderService.GetOrderByIdAsync(id);
+            var order = await _orderService.GetOrderByIdAsync(orderId);
 
             if (order == null)
             {
@@ -79,18 +79,41 @@ namespace TechStore.API.Controllers
                 return BadRequest("One or more products could not be found.");
             }
 
-            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
+            return CreatedAtAction(nameof(GetOrderById), new { orderId = order.Id }, order);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateOrder(int id, UpdateOrderDto dto)
+        [HttpPost("user/{userId}/from-cart")]
+        public async Task<IActionResult> CreateOrderFromCart(int userId, CreateOrderFromCartDto dto)
+        {
+            if (userId <= 0)
+            {
+                return BadRequest("UserId must be greater than zero.");
+            }
+
+            if (dto.UserAddressId <= 0)
+            {
+                return BadRequest("UserAddressId must be greater than zero.");
+            }
+
+            var order = await _orderService.CreateOrderFromCartAsync(userId, dto);
+
+            if (order == null)
+            {
+                return BadRequest("Cart is empty or cart products could not be found.");
+            }
+
+            return CreatedAtAction(nameof(GetOrderById), new { orderId = order.Id }, order);
+        }
+
+        [HttpPut("{orderId}")]
+        public async Task<IActionResult> UpdateOrder(int orderId, UpdateOrderDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Status))
             {
                 return BadRequest("Status cannot be empty.");
             }
 
-            var result = await _orderService.UpdateOrderAsync(id, dto);
+            var result = await _orderService.UpdateOrderAsync(orderId, dto);
 
             if (!result)
             {
@@ -100,10 +123,10 @@ namespace TechStore.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        [HttpDelete("{orderId}")]
+        public async Task<IActionResult> DeleteOrder(int orderId)
         {
-            var result = await _orderService.DeleteOrderAsync(id);
+            var result = await _orderService.DeleteOrderAsync(orderId);
 
             if (!result)
             {

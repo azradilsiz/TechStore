@@ -104,6 +104,52 @@ namespace TechStore.API.Services
             return await GetOrderByIdAsync(order.Id);
         }
 
+        public async Task<OrderDto?> CreateOrderFromCartAsync(int userId, CreateOrderFromCartDto dto)
+        {
+            var cart = await _context.Carts
+                .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (cart == null || cart.CartItems.Count == 0)
+            {
+                return null;
+            }
+
+            if (cart.CartItems.Any(item => item.Product == null))
+            {
+                return null;
+            }
+
+            var order = new Order
+            {
+                UserId = userId,
+                UserAddressId = dto.UserAddressId,
+                OrderDate = DateTime.UtcNow,
+                Status = "Pending"
+            };
+
+            foreach (var cartItem in cart.CartItems)
+            {
+                order.OrderItems.Add(new OrderItem
+                {
+                    ProductId = cartItem.ProductId,
+                    Quantity = cartItem.Quantity,
+                    UnitPrice = cartItem.Product!.Price
+                });
+            }
+
+            order.TotalPrice = order.OrderItems
+                .Sum(item => item.UnitPrice * item.Quantity);
+
+            _context.Orders.Add(order);
+            _context.CartItems.RemoveRange(cart.CartItems);
+
+            await _context.SaveChangesAsync();
+
+            return await GetOrderByIdAsync(order.Id);
+        }
+
         public async Task<bool> UpdateOrderAsync(int id, UpdateOrderDto dto)
         {
             var order = await _context.Orders.FindAsync(id);

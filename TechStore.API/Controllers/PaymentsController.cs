@@ -23,10 +23,10 @@ namespace TechStore.API.Controllers
             return Ok(payments);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPaymentById(int id)
+        [HttpGet("{paymentId}")]
+        public async Task<IActionResult> GetPaymentById(int paymentId)
         {
-            var payment = await _paymentService.GetPaymentByIdAsync(id);
+            var payment = await _paymentService.GetPaymentByIdAsync(paymentId);
 
             if (payment == null)
             {
@@ -36,17 +36,12 @@ namespace TechStore.API.Controllers
             return Ok(payment);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreatePayment(CreatePaymentDto dto)
+        [HttpPost("order/{orderId}")]
+        public async Task<IActionResult> CreatePayment(int orderId, CreatePaymentDto dto)
         {
-            if (dto.OrderId <= 0)
+            if (orderId <= 0)
             {
                 return BadRequest("OrderId must be greater than zero.");
-            }
-
-            if (dto.Amount <= 0)
-            {
-                return BadRequest("Amount must be greater than zero.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.PaymentMethod))
@@ -54,25 +49,25 @@ namespace TechStore.API.Controllers
                 return BadRequest("Payment method cannot be empty.");
             }
 
-            var payment = await _paymentService.CreatePaymentAsync(dto);
+            var payment = await _paymentService.CreatePaymentAsync(orderId, dto);
 
             if (payment == null)
             {
                 return BadRequest("Order could not be found.");
             }
 
-            return CreatedAtAction(nameof(GetPaymentById), new { id = payment.Id }, payment);
+            return CreatedAtAction(nameof(GetPaymentById), new { paymentId = payment.Id }, payment);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePayment(int id, UpdatePaymentDto dto)
+        [HttpPut("{paymentId}")]
+        public async Task<IActionResult> UpdatePayment(int paymentId, UpdatePaymentDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.PaymentStatus))
             {
                 return BadRequest("Payment status cannot be empty.");
             }
 
-            var result = await _paymentService.UpdatePaymentAsync(id, dto);
+            var result = await _paymentService.UpdatePaymentAsync(paymentId, dto);
 
             if (!result)
             {
@@ -82,10 +77,10 @@ namespace TechStore.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayment(int id)
+        [HttpDelete("{paymentId}")]
+        public async Task<IActionResult> DeletePayment(int paymentId)
         {
-            var result = await _paymentService.DeletePaymentAsync(id);
+            var result = await _paymentService.DeletePaymentAsync(paymentId);
 
             if (!result)
             {

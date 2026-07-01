@@ -23,10 +23,10 @@ namespace TechStore.API.Controllers
             return Ok(categories);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategoryById(int id)
+        [HttpGet("{categoryId}")]
+        public async Task<IActionResult> GetCategoryById(int categoryId)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
+            var category = await _categoryService.GetCategoryByIdAsync(categoryId);
 
             if (category == null)
             {
@@ -46,18 +46,18 @@ namespace TechStore.API.Controllers
 
             var category = await _categoryService.CreateCategoryAsync(dto);
 
-            return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
+            return CreatedAtAction(nameof(GetCategoryById), new { categoryId = category.Id }, category);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, UpdateCategoryDto dto)
+        [HttpPut("{categoryId}")]
+        public async Task<IActionResult> UpdateCategory(int categoryId, UpdateCategoryDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
             {
                 return BadRequest("Category name cannot be empty.");
             }
 
-            var result = await _categoryService.UpdateCategoryAsync(id, dto);
+            var result = await _categoryService.UpdateCategoryAsync(categoryId, dto);
 
             if (!result)
             {
@@ -67,10 +67,10 @@ namespace TechStore.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        [HttpDelete("{categoryId}")]
+        public async Task<IActionResult> DeleteCategory(int categoryId)
         {
-            var result = await _categoryService.DeleteCategoryAsync(id);
+            var result = await _categoryService.DeleteCategoryAsync(categoryId);
 
             if (!result)
             {

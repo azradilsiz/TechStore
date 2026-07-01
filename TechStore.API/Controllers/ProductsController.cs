@@ -23,10 +23,10 @@ namespace TechStore.API.Controllers
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductById(int id)
+        [HttpGet("{productId}")]
+        public async Task<IActionResult> GetProductById(int productId)
         {
-            var product = await _productService.GetProductByIdAsync(id);
+            var product = await _productService.GetProductByIdAsync(productId);
 
             if (product == null)
             {
@@ -56,11 +56,11 @@ namespace TechStore.API.Controllers
 
             var product = await _productService.CreateProductAsync(dto);
 
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+            return CreatedAtAction(nameof(GetProductById), new { productId = product.Id }, product);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto dto)
+        [HttpPut("{productId}")]
+        public async Task<IActionResult> UpdateProduct(int productId, UpdateProductDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
             {
@@ -77,7 +77,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Product stock cannot be negative.");
             }
 
-            var result = await _productService.UpdateProductAsync(id, dto);
+            var result = await _productService.UpdateProductAsync(productId, dto);
 
             if (!result)
             {
@@ -87,10 +87,10 @@ namespace TechStore.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        [HttpDelete("{productId}")]
+        public async Task<IActionResult> DeleteProduct(int productId)
         {
-            var result = await _productService.DeleteProductAsync(id);
+            var result = await _productService.DeleteProductAsync(productId);
 
             if (!result)
             {

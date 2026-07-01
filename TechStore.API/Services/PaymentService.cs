@@ -45,9 +45,9 @@ namespace TechStore.API.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<PaymentDto?> CreatePaymentAsync(CreatePaymentDto dto)
+        public async Task<PaymentDto?> CreatePaymentAsync(int orderId, CreatePaymentDto dto)
         {
-            var order = await _context.Orders.FindAsync(dto.OrderId);
+            var order = await _context.Orders.FindAsync(orderId);
 
             if (order == null)
             {
@@ -56,8 +56,8 @@ namespace TechStore.API.Services
 
             var payment = new Payment
             {
-                OrderId = dto.OrderId,
-                Amount = dto.Amount,
+                OrderId = orderId,
+                Amount = order.TotalPrice,
                 PaymentMethod = dto.PaymentMethod,
                 PaymentStatus = "Pending",
                 PaymentDate = DateTime.UtcNow
