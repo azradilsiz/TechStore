@@ -1,67 +1,42 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TechStore.API.Data;
 using TechStore.API.DTOs.UserAddresses;
 using TechStore.API.Entities;
+using TechStore.API.Repositories.Interfaces;
 
 namespace TechStore.API.Services
 {
     public class UserAddressService
     {
-        private readonly AppDbContext _context;
+        private readonly IUserAddressRepository _userAddressRepository;
 
-        public UserAddressService(AppDbContext context)
+        public UserAddressService(IUserAddressRepository userAddressRepository)
         {
-            _context = context;
+            _userAddressRepository = userAddressRepository;
         }
 
         public async Task<List<UserAddressDto>> GetAllUserAddressesAsync()
         {
-            return await _context.UserAddresses
-                .Select(address => new UserAddressDto
-                {
-                    Id = address.Id,
-                    UserId = address.UserId,
-                    City = address.City,
-                    District = address.District,
-                    AddressDetail = address.AddressDetail,
-                    Phone = address.Phone,
-                    Title = address.Title
-                })
-                .ToListAsync();
+            var addresses = await _userAddressRepository.GetAllAsync();
+
+            return addresses.Select(address => MapAddressToDto(address)).ToList();
         }
 
         public async Task<UserAddressDto?> GetUserAddressByIdAsync(int id)
         {
-            return await _context.UserAddresses
-                .Where(address => address.Id == id)
-                .Select(address => new UserAddressDto
-                {
-                    Id = address.Id,
-                    UserId = address.UserId,
-                    City = address.City,
-                    District = address.District,
-                    AddressDetail = address.AddressDetail,
-                    Phone = address.Phone,
-                    Title = address.Title
-                })
-                .FirstOrDefaultAsync();
+            var address = await _userAddressRepository.GetByIdAsync(id);
+
+            if (address == null)
+            {
+                return null;
+            }
+
+            return MapAddressToDto(address);
         }
 
         public async Task<List<UserAddressDto>> GetUserAddressesByUserIdAsync(int userId)
         {
-            return await _context.UserAddresses
-                .Where(address => address.UserId == userId)
-                .Select(address => new UserAddressDto
-                {
-                    Id = address.Id,
-                    UserId = address.UserId,
-                    City = address.City,
-                    District = address.District,
-                    AddressDetail = address.AddressDetail,
-                    Phone = address.Phone,
-                    Title = address.Title
-                })
-                .ToListAsync();
+            var addresses = await _userAddressRepository.GetByUserIdAsync(userId);
+
+            return addresses.Select(address => MapAddressToDto(address)).ToList();
         }
 
         public async Task<UserAddressDto> CreateUserAddressAsync(CreateUserAddressDto dto)
@@ -76,24 +51,15 @@ namespace TechStore.API.Services
                 Title = dto.Title
             };
 
-            _context.UserAddresses.Add(address);
-            await _context.SaveChangesAsync();
+            await _userAddressRepository.AddAsync(address);
+            await _userAddressRepository.SaveChangesAsync();
 
-            return new UserAddressDto
-            {
-                Id = address.Id,
-                UserId = address.UserId,
-                City = address.City,
-                District = address.District,
-                AddressDetail = address.AddressDetail,
-                Phone = address.Phone,
-                Title = address.Title
-            };
+            return MapAddressToDto(address);
         }
 
         public async Task<bool> UpdateUserAddressAsync(int id, UpdateUserAddressDto dto)
         {
-            var address = await _context.UserAddresses.FindAsync(id);
+            var address = await _userAddressRepository.GetByIdAsync(id);
 
             if (address == null)
             {
@@ -106,24 +72,38 @@ namespace TechStore.API.Services
             address.Phone = dto.Phone;
             address.Title = dto.Title;
 
-            await _context.SaveChangesAsync();
+            await _userAddressRepository.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> DeleteUserAddressAsync(int id)
         {
-            var address = await _context.UserAddresses.FindAsync(id);
+            var address = await _userAddressRepository.GetByIdAsync(id);
 
             if (address == null)
             {
                 return false;
             }
 
-            _context.UserAddresses.Remove(address);
-            await _context.SaveChangesAsync();
+            _userAddressRepository.Delete(address);
+            await _userAddressRepository.SaveChangesAsync();
 
             return true;
+        }
+
+        private static UserAddressDto MapAddressToDto(UserAddress address)
+        {
+            return new UserAddressDto
+            {
+                Id = address.Id,
+                UserId = address.UserId,
+                City = address.City,
+                District = address.District,
+                AddressDetail = address.AddressDetail,
+                Phone = address.Phone,
+                Title = address.Title
+            };
         }
     }
 }

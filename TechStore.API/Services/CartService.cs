@@ -1,53 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TechStore.API.Data;
 using TechStore.API.DTOs.Carts;
 using TechStore.API.Entities;
+using TechStore.API.Repositories.Interfaces;
 
 namespace TechStore.API.Services
 {
     public class CartService
     {
-        private readonly AppDbContext _context;
+        private readonly ICartRepository _cartRepository;
 
-        public CartService(AppDbContext context)
+        public CartService(ICartRepository cartRepository)
         {
-            _context = context;
+            _cartRepository = cartRepository;
         }
 
         public async Task<CartDto?> GetCartByUserIdAsync(int userId)
         {
-            var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var cart = await _cartRepository.GetByUserIdWithItemsAndProductsAsync(userId);
 
             if (cart == null)
             {
                 return null;
             }
 
-            return new CartDto
-            {
-                Id = cart.Id,
-                UserId = cart.UserId,
-                Items = cart.CartItems.Select(ci => new CartItemDto
-                {
-                    Id = ci.Id,
-                    ProductId = ci.ProductId,
-                    ProductName = ci.Product != null ? ci.Product.Name : string.Empty,
-                    Quantity = ci.Quantity,
-                    UnitPrice = ci.Product != null ? ci.Product.Price : 0,
-                    TotalPrice = ci.Product != null ? ci.Product.Price * ci.Quantity : 0
-                }).ToList(),
-                TotalPrice = cart.CartItems.Sum(ci => ci.Product != null ? ci.Product.Price * ci.Quantity : 0)
-            };
+            return MapCartToDto(cart);
         }
 
         public async Task<CartDto> AddItemToCartAsync(AddCartItemDto dto)
         {
-            var cart = await _context.Carts
-                .Include(c => c.CartItems)
-                .FirstOrDefaultAsync(c => c.UserId == dto.UserId);
+            var cart = await _cartRepository.GetByUserIdWithItemsAsync(dto.UserId);
 
             if (cart == null)
             {
@@ -56,12 +36,12 @@ namespace TechStore.API.Services
                     UserId = dto.UserId
                 };
 
-                _context.Carts.Add(cart);
-                await _context.SaveChangesAsync();
+                await _cartRepository.AddCartAsync(cart);
+                await _cartRepository.SaveChangesAsync();
             }
 
             var existingItem = cart.CartItems
-                .FirstOrDefault(ci => ci.ProductId == dto.ProductId);
+                .FirstOrDefault(cartItem => cartItem.ProductId == dto.ProductId);
 
             if (existingItem != null)
             {
@@ -76,17 +56,17 @@ namespace TechStore.API.Services
                     Quantity = dto.Quantity
                 };
 
-                _context.CartItems.Add(cartItem);
+                await _cartRepository.AddCartItemAsync(cartItem);
             }
 
-            await _context.SaveChangesAsync();
+            await _cartRepository.SaveChangesAsync();
 
             return (await GetCartByUserIdAsync(dto.UserId))!;
         }
 
         public async Task<bool> UpdateCartItemAsync(int cartItemId, UpdateCartItemDto dto)
         {
-            var cartItem = await _context.CartItems.FindAsync(cartItemId);
+            var cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
 
             if (cartItem == null)
             {
@@ -95,24 +75,44 @@ namespace TechStore.API.Services
 
             cartItem.Quantity = dto.Quantity;
 
-            await _context.SaveChangesAsync();
+            await _cartRepository.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> RemoveCartItemAsync(int cartItemId)
         {
-            var cartItem = await _context.CartItems.FindAsync(cartItemId);
+            var cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
 
             if (cartItem == null)
             {
                 return false;
             }
 
-            _context.CartItems.Remove(cartItem);
-            await _context.SaveChangesAsync();
+            _cartRepository.RemoveCartItem(cartItem);
+            await _cartRepository.SaveChangesAsync();
 
             return true;
+        }
+
+        private static CartDto MapCartToDto(Cart cart)
+        {
+            return new CartDto
+            {
+                Id = cart.Id,
+                UserId = cart.UserId,
+                Items = cart.CartItems.Select(cartItem => new CartItemDto
+                {
+                    Id = cartItem.Id,
+                    ProductId = cartItem.ProductId,
+                    ProductName = cartItem.Product != null ? cartItem.Product.Name : string.Empty,
+                    Quantity = cartItem.Quantity,
+                    UnitPrice = cartItem.Product != null ? cartItem.Product.Price : 0,
+                    TotalPrice = cartItem.Product != null ? cartItem.Product.Price * cartItem.Quantity : 0
+                }).ToList(),
+                TotalPrice = cart.CartItems.Sum(cartItem =>
+                    cartItem.Product != null ? cartItem.Product.Price * cartItem.Quantity : 0)
+            };
         }
     }
 }

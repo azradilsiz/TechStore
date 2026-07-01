@@ -1,54 +1,55 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TechStore.API.Data;
 using TechStore.API.DTOs.Products;
 using TechStore.API.Entities;
+using TechStore.API.Repositories.Interfaces;
 
 namespace TechStore.API.Services
 {
     public class ProductService
     {
-        private readonly AppDbContext _context;
+        private readonly IProductRepository _productRepository;
 
-        public ProductService(AppDbContext context)
+        public ProductService(IProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         public async Task<List<ProductDto>> GetAllProductsAsync()
         {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Select(p => new ProductDto
-                {
-                    Id = p.Id,
-                    CategoryId = p.CategoryId,
-                    CategoryName = p.Category != null ? p.Category.Name : string.Empty,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Price = p.Price,
-                    Stock = p.Stock,
-                    ImageUrl = p.ImageUrl
-                })
-                .ToListAsync();
+            var products = await _productRepository.GetAllWithCategoryAsync();
+
+            return products.Select(product => new ProductDto
+            {
+                Id = product.Id,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category != null ? product.Category.Name : string.Empty,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Stock = product.Stock,
+                ImageUrl = product.ImageUrl
+            }).ToList();
         }
 
         public async Task<ProductDto?> GetProductByIdAsync(int id)
         {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Where(p => p.Id == id)
-                .Select(p => new ProductDto
-                {
-                    Id = p.Id,
-                    CategoryId = p.CategoryId,
-                    CategoryName = p.Category != null ? p.Category.Name : string.Empty,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Price = p.Price,
-                    Stock = p.Stock,
-                    ImageUrl = p.ImageUrl
-                })
-                .FirstOrDefaultAsync();
+            var product = await _productRepository.GetByIdWithCategoryAsync(id);
+
+            if (product == null)
+            {
+                return null;
+            }
+
+            return new ProductDto
+            {
+                Id = product.Id,
+                CategoryId = product.CategoryId,
+                CategoryName = product.Category != null ? product.Category.Name : string.Empty,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Stock = product.Stock,
+                ImageUrl = product.ImageUrl
+            };
         }
 
         public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
@@ -63,8 +64,8 @@ namespace TechStore.API.Services
                 ImageUrl = dto.ImageUrl
             };
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            await _productRepository.AddAsync(product);
+            await _productRepository.SaveChangesAsync();
 
             var createdProduct = await GetProductByIdAsync(product.Id);
 
@@ -73,7 +74,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateProductAsync(int id, UpdateProductDto dto)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
             {
@@ -87,22 +88,22 @@ namespace TechStore.API.Services
             product.Stock = dto.Stock;
             product.ImageUrl = dto.ImageUrl;
 
-            await _context.SaveChangesAsync();
+            await _productRepository.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> DeleteProductAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
             {
                 return false;
             }
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            _productRepository.Delete(product);
+            await _productRepository.SaveChangesAsync();
 
             return true;
         }

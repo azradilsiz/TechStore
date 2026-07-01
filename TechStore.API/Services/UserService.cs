@@ -1,48 +1,51 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TechStore.API.Data;
 using TechStore.API.DTOs.Users;
 using TechStore.API.Entities;
+using TechStore.API.Repositories.Interfaces;
 
 namespace TechStore.API.Services
 {
     public class UserService
     {
-        private readonly AppDbContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(AppDbContext context)
+        public UserService(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
 
         public async Task<List<UserDto>> GetAllUsersAsync()
         {
-            return await _context.Users
-                .Select(user => new UserDto
-                {
-                    Id = user.Id,
-                    UserTypeId = user.UserTypeId,
-                    UserName = user.UserName,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email
-                })
-                .ToListAsync();
+            var users = await _userRepository.GetAllAsync();
+
+            return users.Select(user => new UserDto
+            {
+                Id = user.Id,
+                UserTypeId = user.UserTypeId,
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            }).ToList();
         }
 
         public async Task<UserDto?> GetUserByIdAsync(int id)
         {
-            return await _context.Users
-                .Where(user => user.Id == id)
-                .Select(user => new UserDto
-                {
-                    Id = user.Id,
-                    UserTypeId = user.UserTypeId,
-                    UserName = user.UserName,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email
-                })
-                .FirstOrDefaultAsync();
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return new UserDto
+            {
+                Id = user.Id,
+                UserTypeId = user.UserTypeId,
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email
+            };
         }
 
         public async Task<UserDto> CreateUserAsync(CreateUserDto dto)
@@ -60,8 +63,8 @@ namespace TechStore.API.Services
                 PasswordHash = dto.Password
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _userRepository.AddAsync(user);
+            await _userRepository.SaveChangesAsync();
 
             return new UserDto
             {
@@ -76,7 +79,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateUserAsync(int id, UpdateUserDto dto)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
@@ -89,22 +92,22 @@ namespace TechStore.API.Services
             user.LastName = dto.LastName;
             user.Email = dto.Email;
 
-            await _context.SaveChangesAsync();
+            await _userRepository.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
                 return false;
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            _userRepository.Delete(user);
+            await _userRepository.SaveChangesAsync();
 
             return true;
         }

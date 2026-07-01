@@ -1,40 +1,43 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TechStore.API.Data;
 using TechStore.API.DTOs.UserTypes;
 using TechStore.API.Entities;
+using TechStore.API.Repositories.Interfaces;
 
 namespace TechStore.API.Services
 {
     public class UserTypeService
     {
-        private readonly AppDbContext _context;
+        private readonly IUserTypeRepository _userTypeRepository;
 
-        public UserTypeService(AppDbContext context)
+        public UserTypeService(IUserTypeRepository userTypeRepository)
         {
-            _context = context;
+            _userTypeRepository = userTypeRepository;
         }
 
         public async Task<List<UserTypeDto>> GetAllUserTypesAsync()
         {
-            return await _context.UserTypes
-                .Select(userType => new UserTypeDto
-                {
-                    Id = userType.Id,
-                    TypeName = userType.TypeName
-                })
-                .ToListAsync();
+            var userTypes = await _userTypeRepository.GetAllAsync();
+
+            return userTypes.Select(userType => new UserTypeDto
+            {
+                Id = userType.Id,
+                TypeName = userType.TypeName
+            }).ToList();
         }
 
         public async Task<UserTypeDto?> GetUserTypeByIdAsync(int id)
         {
-            return await _context.UserTypes
-                .Where(userType => userType.Id == id)
-                .Select(userType => new UserTypeDto
-                {
-                    Id = userType.Id,
-                    TypeName = userType.TypeName
-                })
-                .FirstOrDefaultAsync();
+            var userType = await _userTypeRepository.GetByIdAsync(id);
+
+            if (userType == null)
+            {
+                return null;
+            }
+
+            return new UserTypeDto
+            {
+                Id = userType.Id,
+                TypeName = userType.TypeName
+            };
         }
 
         public async Task<UserTypeDto> CreateUserTypeAsync(CreateUserTypeDto dto)
@@ -44,8 +47,8 @@ namespace TechStore.API.Services
                 TypeName = dto.TypeName
             };
 
-            _context.UserTypes.Add(userType);
-            await _context.SaveChangesAsync();
+            await _userTypeRepository.AddAsync(userType);
+            await _userTypeRepository.SaveChangesAsync();
 
             return new UserTypeDto
             {
@@ -56,7 +59,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateUserTypeAsync(int id, UpdateUserTypeDto dto)
         {
-            var userType = await _context.UserTypes.FindAsync(id);
+            var userType = await _userTypeRepository.GetByIdAsync(id);
 
             if (userType == null)
             {
@@ -65,22 +68,22 @@ namespace TechStore.API.Services
 
             userType.TypeName = dto.TypeName;
 
-            await _context.SaveChangesAsync();
+            await _userTypeRepository.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> DeleteUserTypeAsync(int id)
         {
-            var userType = await _context.UserTypes.FindAsync(id);
+            var userType = await _userTypeRepository.GetByIdAsync(id);
 
             if (userType == null)
             {
                 return false;
             }
 
-            _context.UserTypes.Remove(userType);
-            await _context.SaveChangesAsync();
+            _userTypeRepository.Delete(userType);
+            await _userTypeRepository.SaveChangesAsync();
 
             return true;
         }

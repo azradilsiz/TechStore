@@ -1,40 +1,43 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TechStore.API.Data;
 using TechStore.API.DTOs.Categories;
 using TechStore.API.Entities;
+using TechStore.API.Repositories.Interfaces;
 
 namespace TechStore.API.Services
 {
     public class CategoryService
     {
-        private readonly AppDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryService(AppDbContext context)
+        public CategoryService(ICategoryRepository categoryRepository)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<List<CategoryDto>> GetAllCategoriesAsync()
         {
-            return await _context.Categories
-                .Select(category => new CategoryDto
-                {
-                    Id = category.Id,
-                    Name = category.Name
-                })
-                .ToListAsync();
+            var categories = await _categoryRepository.GetAllAsync();
+
+            return categories.Select(category => new CategoryDto
+            {
+                Id = category.Id,
+                Name = category.Name
+            }).ToList();
         }
 
         public async Task<CategoryDto?> GetCategoryByIdAsync(int id)
         {
-            return await _context.Categories
-                .Where(category => category.Id == id)
-                .Select(category => new CategoryDto
-                {
-                    Id = category.Id,
-                    Name = category.Name
-                })
-                .FirstOrDefaultAsync();
+            var category = await _categoryRepository.GetByIdAsync(id);
+
+            if (category == null)
+            {
+                return null;
+            }
+
+            return new CategoryDto
+            {
+                Id = category.Id,
+                Name = category.Name
+            };
         }
 
         public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto dto)
@@ -44,8 +47,8 @@ namespace TechStore.API.Services
                 Name = dto.Name
             };
 
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            await _categoryRepository.AddAsync(category);
+            await _categoryRepository.SaveChangesAsync();
 
             return new CategoryDto
             {
@@ -56,7 +59,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateCategoryAsync(int id, UpdateCategoryDto dto)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id);
 
             if (category == null)
             {
@@ -65,22 +68,22 @@ namespace TechStore.API.Services
 
             category.Name = dto.Name;
 
-            await _context.SaveChangesAsync();
+            await _categoryRepository.SaveChangesAsync();
 
             return true;
         }
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id);
 
             if (category == null)
             {
                 return false;
             }
 
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            _categoryRepository.Delete(category);
+            await _categoryRepository.SaveChangesAsync();
 
             return true;
         }

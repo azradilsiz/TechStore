@@ -1,53 +1,40 @@
-using Microsoft.EntityFrameworkCore;
-using TechStore.API.Data;
 using TechStore.API.DTOs.Payments;
 using TechStore.API.Entities;
+using TechStore.API.Repositories.Interfaces;
 
 namespace TechStore.API.Services
 {
     public class PaymentService
     {
-        private readonly AppDbContext _context;
+        private readonly IPaymentRepository _paymentRepository;
 
-        public PaymentService(AppDbContext context)
+        public PaymentService(IPaymentRepository paymentRepository)
         {
-            _context = context;
+            _paymentRepository = paymentRepository;
         }
 
         public async Task<List<PaymentDto>> GetAllPaymentsAsync()
         {
-            return await _context.Payments
-                .Select(payment => new PaymentDto
-                {
-                    Id = payment.Id,
-                    OrderId = payment.OrderId,
-                    Amount = payment.Amount,
-                    PaymentMethod = payment.PaymentMethod,
-                    PaymentStatus = payment.PaymentStatus,
-                    PaymentDate = payment.PaymentDate
-                })
-                .ToListAsync();
+            var payments = await _paymentRepository.GetAllAsync();
+
+            return payments.Select(payment => MapPaymentToDto(payment)).ToList();
         }
 
         public async Task<PaymentDto?> GetPaymentByIdAsync(int id)
         {
-            return await _context.Payments
-                .Where(payment => payment.Id == id)
-                .Select(payment => new PaymentDto
-                {
-                    Id = payment.Id,
-                    OrderId = payment.OrderId,
-                    Amount = payment.Amount,
-                    PaymentMethod = payment.PaymentMethod,
-                    PaymentStatus = payment.PaymentStatus,
-                    PaymentDate = payment.PaymentDate
-                })
-                .FirstOrDefaultAsync();
+            var payment = await _paymentRepository.GetByIdAsync(id);
+
+            if (payment == null)
+            {
+                return null;
+            }
+
+            return MapPaymentToDto(payment);
         }
 
         public async Task<PaymentDto?> CreatePaymentAsync(int orderId, CreatePaymentDto dto)
         {
-            var order = await _context.Orders.FindAsync(orderId);
+            var order = await _paymentRepository.GetOrderByIdAsync(orderId);
 
             if (order == null)
             {
@@ -63,9 +50,45 @@ namespace TechStore.API.Services
                 PaymentDate = DateTime.UtcNow
             };
 
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
+            await _paymentRepository.AddAsync(payment);
+            await _paymentRepository.SaveChangesAsync();
 
+            return MapPaymentToDto(payment);
+        }
+
+        public async Task<bool> UpdatePaymentAsync(int id, UpdatePaymentDto dto)
+        {
+            var payment = await _paymentRepository.GetByIdAsync(id);
+
+            if (payment == null)
+            {
+                return false;
+            }
+
+            payment.PaymentStatus = dto.PaymentStatus;
+
+            await _paymentRepository.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeletePaymentAsync(int id)
+        {
+            var payment = await _paymentRepository.GetByIdAsync(id);
+
+            if (payment == null)
+            {
+                return false;
+            }
+
+            _paymentRepository.Delete(payment);
+            await _paymentRepository.SaveChangesAsync();
+
+            return true;
+        }
+
+        private static PaymentDto MapPaymentToDto(Payment payment)
+        {
             return new PaymentDto
             {
                 Id = payment.Id,
@@ -75,37 +98,6 @@ namespace TechStore.API.Services
                 PaymentStatus = payment.PaymentStatus,
                 PaymentDate = payment.PaymentDate
             };
-        }
-
-        public async Task<bool> UpdatePaymentAsync(int id, UpdatePaymentDto dto)
-        {
-            var payment = await _context.Payments.FindAsync(id);
-
-            if (payment == null)
-            {
-                return false;
-            }
-
-            payment.PaymentStatus = dto.PaymentStatus;
-
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> DeletePaymentAsync(int id)
-        {
-            var payment = await _context.Payments.FindAsync(id);
-
-            if (payment == null)
-            {
-                return false;
-            }
-
-            _context.Payments.Remove(payment);
-            await _context.SaveChangesAsync();
-
-            return true;
         }
     }
 }
