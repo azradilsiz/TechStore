@@ -1,0 +1,81 @@
+<section class="cart-page">
+  <div class="page-header">
+    <div>
+      <h2>Sepetim</h2>
+      <p>Sepetindeki ürünleri kontrol et ve ödeme adımına geç.</p>
+    </div>
+  </div>
+
+  <div class="state-box" *ngIf="isLoading">
+    Sepet yükleniyor...
+  </div>
+
+  <div class="state-box error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="state-box" *ngIf="!isLoading && !errorMessage && (!cart || cart.items.length === 0)">
+    Sepetinde henüz ürün bulunmuyor.
+  </div>
+
+  <div class="cart-layout" *ngIf="!isLoading && cart && cart.items.length > 0">
+    <div class="cart-items">
+      <article class="cart-item" *ngFor="let item of cart.items">
+        <div class="item-main">
+          <h3>{{ item.productName }}</h3>
+          <p>Birim fiyat: {{ item.unitPrice }} TL</p>
+        </div>
+
+        <div class="quantity-control">
+          <button
+            type="button"
+            aria-label="Adedi azalt"
+            (click)="decreaseQuantity(item.id, item.quantity)">
+            -
+          </button>
+
+          <span>{{ item.quantity }}</span>
+
+          <button
+            type="button"
+            aria-label="Adedi artır"
+            (click)="increaseQuantity(item.id, item.quantity)">
+            +
+          </button>
+        </div>
+
+        <strong class="item-total">{{ item.totalPrice }} TL</strong>
+
+        <button
+          type="button"
+          class="remove-button"
+          (click)="removeItem(item.id)">
+          Sil
+        </button>
+      </article>
+    </div>
+
+    <aside class="cart-summary">
+      <h3>Sipariş Özeti</h3>
+
+      <div class="summary-row">
+        <span>Ürün tutarı</span>
+        <strong>{{ cart.totalPrice }} TL</strong>
+      </div>
+
+      <div class="summary-row muted">
+        <span>Kargo</span>
+        <span>Ödeme adımında hesaplanır</span>
+      </div>
+
+      <div class="summary-total">
+        <span>Toplam</span>
+        <strong>{{ cart.totalPrice }} TL</strong>
+      </div>
+
+      <button type="button" class="checkout-button">
+        Ödemeye Geç
+      </button>
+    </aside>
+  </div>
+</section>

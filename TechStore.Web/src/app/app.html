@@ -1,11 +1,18 @@
 <header class="app-header">
-  <h1>TechStore</h1>
+  <div class="brand">
+    <span class="brand-mark">TS</span>
+    <div>
+      <h1>Teknoloji Mağazası</h1>
+      <p>Bilgisayar, telefon ve aksesuar ürünleri</p>
+    </div>
+  </div>
 
-  <nav>
+  <nav class="main-nav">
     <a routerLink="/products">Ürünler</a>
+    <a routerLink="/cart">Sepet</a>
   </nav>
 </header>
 
-<main>
+<main class="app-main">
   <router-outlet></router-outlet>
 </main>

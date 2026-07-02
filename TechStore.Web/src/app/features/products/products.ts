@@ -1,7 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
 import { Product } from '../../models/product.model';
+
+type ProductPageStatus = 'loading' | 'success' | 'empty' | 'error';
 
 @Component({
   selector: 'app-products',
@@ -11,24 +14,58 @@ import { Product } from '../../models/product.model';
 })
 export class Products implements OnInit {
   products: Product[] = [];
-  isLoading = true;
+  status: ProductPageStatus = 'loading';
   errorMessage = '';
+  successMessage = '';
 
-  constructor(private productService: ProductService) {}
+  currentUserId = 2;
+
+  constructor(
+    private productService: ProductService,
+    private cartService: CartService,
+    private changeDetector: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.getProducts();
   }
 
   getProducts(): void {
+    this.status = 'loading';
+    this.errorMessage = '';
+    this.successMessage = '';
+
     this.productService.getProducts().subscribe({
       next: (products) => {
         this.products = products;
-        this.isLoading = false;
+        this.status = products.length > 0 ? 'success' : 'empty';
+        this.changeDetector.detectChanges();
       },
       error: () => {
+        this.products = [];
+        this.status = 'error';
         this.errorMessage = 'Ürünler yüklenirken bir hata oluştu.';
-        this.isLoading = false;
+        this.changeDetector.detectChanges();
+      }
+    });
+  }
+
+  addToCart(product: Product): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.cartService.addItemToCart({
+      userId: this.currentUserId,
+      productId: product.id,
+      quantity: 1
+    }).subscribe({
+      next: () => {
+        this.successMessage = `${product.name} sepete eklendi.`;
+        this.changeDetector.detectChanges();
+      },
+      error: () => {
+        this.errorMessage = 'Ürün sepete eklenirken bir hata oluştu.';
+        this.changeDetector.detectChanges();
       }
     });
   }

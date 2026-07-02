@@ -1,31 +1,54 @@
 <section class="products-page">
   <div class="page-header">
-    <h2>Ürünler</h2>
-    <p>TechStore ürün kataloğu</p>
+    <div>
+      <h2>Ürünler</h2>
+      <p>Teknoloji ihtiyaçların için seçilmiş ürünler</p>
+    </div>
   </div>
 
-  <p *ngIf="isLoading">Ürünler yükleniyor...</p>
+  <div class="state-box" *ngIf="status === 'loading'">
+    Ürünler yükleniyor...
+  </div>
 
-  <p *ngIf="errorMessage" class="error-message">
+  <div class="state-box error-message" *ngIf="status === 'error'">
     {{ errorMessage }}
-  </p>
+  </div>
 
-  <div class="product-grid" *ngIf="!isLoading && !errorMessage">
+  <div class="state-box success-message" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="state-box" *ngIf="status === 'empty'">
+    Henüz ürün bulunmamaktadır.
+  </div>
+
+  <div class="product-grid" *ngIf="status === 'success'">
     <article class="product-card" *ngFor="let product of products">
-      <img
-        [src]="product.imageUrl"
-        [alt]="product.name"
-        class="product-image"
-      />
+      <div class="image-wrap">
+        <img
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="product-image"
+        />
+      </div>
 
       <div class="product-info">
         <span class="category">{{ product.categoryName }}</span>
+
         <h3>{{ product.name }}</h3>
+
         <p>{{ product.description }}</p>
+
+        <div class="meta-row">
+          <span>Stok: {{ product.stock }}</span>
+        </div>
 
         <div class="product-footer">
           <strong>{{ product.price }} TL</strong>
-          <span>Stok: {{ product.stock }}</span>
+
+          <button type="button" (click)="addToCart(product)">
+            Sepete Ekle
+          </button>
         </div>
       </div>
     </article>
