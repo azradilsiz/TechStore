@@ -15,7 +15,7 @@ namespace TechStore.API.Services
 
         public async Task<List<ProductDto>> GetAllProductsAsync()
         {
-            var products = await _productRepository.GetAllWithCategoryAsync();
+            List<Product> products = await _productRepository.GetAllWithCategoryAsync();
 
             return products.Select(product => new ProductDto
             {
@@ -32,7 +32,7 @@ namespace TechStore.API.Services
 
         public async Task<ProductDto?> GetProductByIdAsync(int id)
         {
-            var product = await _productRepository.GetByIdWithCategoryAsync(id);
+            Product? product = await _productRepository.GetByIdWithCategoryAsync(id);
 
             if (product == null)
             {
@@ -54,7 +54,7 @@ namespace TechStore.API.Services
 
         public async Task<ProductDto> CreateProductAsync(CreateProductDto dto)
         {
-            var product = new Product
+            Product product = new Product
             {
                 CategoryId = dto.CategoryId,
                 Name = dto.Name,
@@ -67,14 +67,14 @@ namespace TechStore.API.Services
             await _productRepository.AddAsync(product);
             await _productRepository.SaveChangesAsync();
 
-            var createdProduct = await GetProductByIdAsync(product.Id);
+            ProductDto? createdProduct = await GetProductByIdAsync(product.Id);
 
             return createdProduct!;
         }
 
         public async Task<bool> UpdateProductAsync(int id, UpdateProductDto dto)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            Product? product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
             {
@@ -95,14 +95,14 @@ namespace TechStore.API.Services
 
         public async Task<bool> DeleteProductAsync(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            Product? product = await _productRepository.GetByIdAsync(id);
 
             if (product == null)
             {
                 return false;
             }
 
-            _productRepository.Delete(product);
+            product.IsDeleted = true;
             await _productRepository.SaveChangesAsync();
 
             return true;

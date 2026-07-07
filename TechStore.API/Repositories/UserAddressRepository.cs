@@ -16,18 +16,21 @@ namespace TechStore.API.Repositories
 
         public async Task<List<UserAddress>> GetAllAsync()
         {
-            return await _context.UserAddresses.ToListAsync();
+            return await _context.UserAddresses
+                .Where(address => !address.IsDeleted)
+                .ToListAsync();
         }
 
         public async Task<UserAddress?> GetByIdAsync(int id)
         {
-            return await _context.UserAddresses.FindAsync(id);
+            return await _context.UserAddresses
+                .FirstOrDefaultAsync(address => address.Id == id && !address.IsDeleted);
         }
 
         public async Task<List<UserAddress>> GetByUserIdAsync(int userId)
         {
             return await _context.UserAddresses
-                .Where(address => address.UserId == userId)
+                .Where(address => address.UserId == userId && !address.IsDeleted)
                 .ToListAsync();
         }
 

@@ -18,7 +18,7 @@ namespace TechStore.API.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetCartByUserId(int userId)
         {
-            var cart = await _cartService.GetCartByUserIdAsync(userId);
+            CartDto? cart = await _cartService.GetCartByUserIdAsync(userId);
 
             if (cart == null)
             {
@@ -46,7 +46,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Quantity must be greater than zero.");
             }
 
-            var cart = await _cartService.AddItemToCartAsync(dto);
+            CartDto cart = await _cartService.AddItemToCartAsync(dto);
 
             return Ok(cart);
         }
@@ -59,7 +59,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Quantity must be greater than zero.");
             }
 
-            var result = await _cartService.UpdateCartItemAsync(cartItemId, dto);
+            bool result = await _cartService.UpdateCartItemAsync(cartItemId, dto);
 
             if (!result)
             {
@@ -72,7 +72,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("items/{cartItemId}")]
         public async Task<IActionResult> RemoveCartItem(int cartItemId)
         {
-            var result = await _cartService.RemoveCartItemAsync(cartItemId);
+            bool result = await _cartService.RemoveCartItemAsync(cartItemId);
 
             if (!result)
             {

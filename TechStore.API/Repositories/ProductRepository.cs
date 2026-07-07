@@ -17,6 +17,7 @@ namespace TechStore.API.Repositories
         public async Task<List<Product>> GetAllWithCategoryAsync()
         {
             return await _context.Products
+                .Where(product => !product.IsDeleted)
                 .Include(product => product.Category)
                 .ToListAsync();
         }
@@ -24,13 +25,15 @@ namespace TechStore.API.Repositories
         public async Task<Product?> GetByIdWithCategoryAsync(int id)
         {
             return await _context.Products
+                .Where(product => !product.IsDeleted)
                 .Include(product => product.Category)
                 .FirstOrDefaultAsync(product => product.Id == id);
         }
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products
+                .FirstOrDefaultAsync(product => product.Id == id && !product.IsDeleted);
         }
 
         public async Task AddAsync(Product product)

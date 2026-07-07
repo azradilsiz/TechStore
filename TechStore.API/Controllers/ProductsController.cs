@@ -22,7 +22,7 @@ namespace TechStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _productService.GetAllProductsAsync();
+            List<ProductDto> products = await _productService.GetAllProductsAsync();
 
             return Ok(products);
         }
@@ -30,7 +30,7 @@ namespace TechStore.API.Controllers
         [HttpGet("{productId}")]
         public async Task<IActionResult> GetProductById(int productId)
         {
-            var product = await _productService.GetProductByIdAsync(productId);
+            ProductDto? product = await _productService.GetProductByIdAsync(productId);
 
             if (product == null)
             {
@@ -43,7 +43,7 @@ namespace TechStore.API.Controllers
         [HttpPost("import-external")]
         public async Task<IActionResult> ImportExternalProducts()
         {
-            var importedCount = await _externalProductService.ImportProductsAsync();
+            int importedCount = await _externalProductService.ImportProductsAsync();
 
             return Ok(new
             {
@@ -70,7 +70,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Product stock cannot be negative.");
             }
 
-            var product = await _productService.CreateProductAsync(dto);
+            ProductDto product = await _productService.CreateProductAsync(dto);
 
             return CreatedAtAction(nameof(GetProductById), new { productId = product.Id }, product);
         }
@@ -93,7 +93,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Product stock cannot be negative.");
             }
 
-            var result = await _productService.UpdateProductAsync(productId, dto);
+            bool result = await _productService.UpdateProductAsync(productId, dto);
 
             if (!result)
             {
@@ -106,7 +106,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("{productId}")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
-            var result = await _productService.DeleteProductAsync(productId);
+            bool result = await _productService.DeleteProductAsync(productId);
 
             if (!result)
             {

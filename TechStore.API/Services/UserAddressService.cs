@@ -15,14 +15,14 @@ namespace TechStore.API.Services
 
         public async Task<List<UserAddressDto>> GetAllUserAddressesAsync()
         {
-            var addresses = await _userAddressRepository.GetAllAsync();
+            List<UserAddress> addresses = await _userAddressRepository.GetAllAsync();
 
             return addresses.Select(address => MapAddressToDto(address)).ToList();
         }
 
         public async Task<UserAddressDto?> GetUserAddressByIdAsync(int id)
         {
-            var address = await _userAddressRepository.GetByIdAsync(id);
+            UserAddress? address = await _userAddressRepository.GetByIdAsync(id);
 
             if (address == null)
             {
@@ -34,14 +34,14 @@ namespace TechStore.API.Services
 
         public async Task<List<UserAddressDto>> GetUserAddressesByUserIdAsync(int userId)
         {
-            var addresses = await _userAddressRepository.GetByUserIdAsync(userId);
+            List<UserAddress> addresses = await _userAddressRepository.GetByUserIdAsync(userId);
 
             return addresses.Select(address => MapAddressToDto(address)).ToList();
         }
 
         public async Task<UserAddressDto> CreateUserAddressAsync(CreateUserAddressDto dto)
         {
-            var address = new UserAddress
+            UserAddress address = new UserAddress
             {
                 UserId = dto.UserId,
                 City = dto.City,
@@ -59,7 +59,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateUserAddressAsync(int id, UpdateUserAddressDto dto)
         {
-            var address = await _userAddressRepository.GetByIdAsync(id);
+            UserAddress? address = await _userAddressRepository.GetByIdAsync(id);
 
             if (address == null)
             {
@@ -79,14 +79,14 @@ namespace TechStore.API.Services
 
         public async Task<bool> DeleteUserAddressAsync(int id)
         {
-            var address = await _userAddressRepository.GetByIdAsync(id);
+            UserAddress? address = await _userAddressRepository.GetByIdAsync(id);
 
             if (address == null)
             {
                 return false;
             }
 
-            _userAddressRepository.Delete(address);
+            address.IsDeleted = true;
             await _userAddressRepository.SaveChangesAsync();
 
             return true;

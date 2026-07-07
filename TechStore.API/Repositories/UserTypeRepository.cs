@@ -29,6 +29,12 @@ namespace TechStore.API.Repositories
             await _context.UserTypes.AddAsync(userType);
         }
 
+        public async Task<bool> HasUsersAsync(int userTypeId)
+        {
+            return await _context.Users
+                .AnyAsync(user => user.UserTypeId == userTypeId && !user.IsDeleted);
+        }
+
         public void Delete(UserType userType)
         {
             _context.UserTypes.Remove(userType);

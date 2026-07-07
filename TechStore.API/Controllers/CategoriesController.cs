@@ -18,7 +18,7 @@ namespace TechStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
+            List<CategoryDto> categories = await _categoryService.GetAllCategoriesAsync();
 
             return Ok(categories);
         }
@@ -26,7 +26,7 @@ namespace TechStore.API.Controllers
         [HttpGet("{categoryId}")]
         public async Task<IActionResult> GetCategoryById(int categoryId)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(categoryId);
+            CategoryDto? category = await _categoryService.GetCategoryByIdAsync(categoryId);
 
             if (category == null)
             {
@@ -44,7 +44,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Category name cannot be empty.");
             }
 
-            var category = await _categoryService.CreateCategoryAsync(dto);
+            CategoryDto category = await _categoryService.CreateCategoryAsync(dto);
 
             return CreatedAtAction(nameof(GetCategoryById), new { categoryId = category.Id }, category);
         }
@@ -57,7 +57,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Category name cannot be empty.");
             }
 
-            var result = await _categoryService.UpdateCategoryAsync(categoryId, dto);
+            bool result = await _categoryService.UpdateCategoryAsync(categoryId, dto);
 
             if (!result)
             {
@@ -70,7 +70,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("{categoryId}")]
         public async Task<IActionResult> DeleteCategory(int categoryId)
         {
-            var result = await _categoryService.DeleteCategoryAsync(categoryId);
+            bool result = await _categoryService.DeleteCategoryAsync(categoryId);
 
             if (!result)
             {

@@ -10,6 +10,8 @@ namespace TechStore.API.Repositories.Interfaces
 
         Task AddAsync(UserType userType);
 
+        Task<bool> HasUsersAsync(int userTypeId);
+
         void Delete(UserType userType);
 
         Task SaveChangesAsync();

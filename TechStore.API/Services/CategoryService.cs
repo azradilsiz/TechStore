@@ -15,7 +15,7 @@ namespace TechStore.API.Services
 
         public async Task<List<CategoryDto>> GetAllCategoriesAsync()
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            List<Category> categories = await _categoryRepository.GetAllAsync();
 
             return categories.Select(category => new CategoryDto
             {
@@ -26,7 +26,7 @@ namespace TechStore.API.Services
 
         public async Task<CategoryDto?> GetCategoryByIdAsync(int id)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            Category? category = await _categoryRepository.GetByIdAsync(id);
 
             if (category == null)
             {
@@ -42,7 +42,7 @@ namespace TechStore.API.Services
 
         public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto dto)
         {
-            var category = new Category
+            Category category = new Category
             {
                 Name = dto.Name
             };
@@ -59,7 +59,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateCategoryAsync(int id, UpdateCategoryDto dto)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            Category? category = await _categoryRepository.GetByIdAsync(id);
 
             if (category == null)
             {
@@ -75,14 +75,14 @@ namespace TechStore.API.Services
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            Category? category = await _categoryRepository.GetByIdAsync(id);
 
             if (category == null)
             {
                 return false;
             }
 
-            _categoryRepository.Delete(category);
+            category.IsDeleted = true;
             await _categoryRepository.SaveChangesAsync();
 
             return true;

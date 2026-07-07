@@ -15,14 +15,14 @@ namespace TechStore.API.Services
 
         public async Task<List<OrderDto>> GetAllOrdersAsync()
         {
-            var orders = await _orderRepository.GetAllWithDetailsAsync();
+            List<Order> orders = await _orderRepository.GetAllWithDetailsAsync();
 
             return orders.Select(MapOrderToDto).ToList();
         }
 
         public async Task<OrderDto?> GetOrderByIdAsync(int id)
         {
-            var order = await _orderRepository.GetByIdWithDetailsAsync(id);
+            Order? order = await _orderRepository.GetByIdWithDetailsAsync(id);
 
             if (order == null)
             {
@@ -34,26 +34,26 @@ namespace TechStore.API.Services
 
         public async Task<List<OrderDto>> GetOrdersByUserIdAsync(int userId)
         {
-            var orders = await _orderRepository.GetByUserIdWithDetailsAsync(userId);
+            List<Order> orders = await _orderRepository.GetByUserIdWithDetailsAsync(userId);
 
             return orders.Select(MapOrderToDto).ToList();
         }
 
         public async Task<OrderDto?> CreateOrderAsync(CreateOrderDto dto)
         {
-            var productIds = dto.Items
+            List<int> productIds = dto.Items
                 .Select(item => item.ProductId)
                 .Distinct()
                 .ToList();
 
-            var products = await _orderRepository.GetProductsByIdsAsync(productIds);
+            Dictionary<int, Product> products = await _orderRepository.GetProductsByIdsAsync(productIds);
 
             if (products.Count != productIds.Count)
             {
                 return null;
             }
 
-            var order = new Order
+            Order order = new Order
             {
                 UserId = dto.UserId,
                 UserAddressId = dto.UserAddressId,
@@ -61,9 +61,9 @@ namespace TechStore.API.Services
                 Status = "Pending"
             };
 
-            foreach (var item in dto.Items)
+            foreach (CreateOrderItemDto item in dto.Items)
             {
-                var product = products[item.ProductId];
+                Product product = products[item.ProductId];
 
                 order.OrderItems.Add(new OrderItem
                 {
@@ -84,7 +84,7 @@ namespace TechStore.API.Services
 
         public async Task<OrderDto?> CreateOrderFromCartAsync(int userId, CreateOrderFromCartDto dto)
         {
-            var cart = await _orderRepository.GetCartByUserIdWithItemsAndProductsAsync(userId);
+            Cart? cart = await _orderRepository.GetCartByUserIdWithItemsAndProductsAsync(userId);
 
             if (cart == null || cart.CartItems.Count == 0)
             {
@@ -96,7 +96,7 @@ namespace TechStore.API.Services
                 return null;
             }
 
-            var order = new Order
+            Order order = new Order
             {
                 UserId = userId,
                 UserAddressId = dto.UserAddressId,
@@ -104,7 +104,7 @@ namespace TechStore.API.Services
                 Status = "Pending"
             };
 
-            foreach (var cartItem in cart.CartItems)
+            foreach (CartItem cartItem in cart.CartItems)
             {
                 order.OrderItems.Add(new OrderItem
                 {
@@ -127,7 +127,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateOrderAsync(int id, UpdateOrderDto dto)
         {
-            var order = await _orderRepository.GetByIdAsync(id);
+            Order? order = await _orderRepository.GetByIdAsync(id);
 
             if (order == null)
             {
@@ -143,21 +143,14 @@ namespace TechStore.API.Services
 
         public async Task<bool> DeleteOrderAsync(int id)
         {
-            var order = await _orderRepository.GetByIdWithItemsAndPaymentAsync(id);
+            Order? order = await _orderRepository.GetByIdAsync(id);
 
             if (order == null)
             {
                 return false;
             }
 
-            _orderRepository.RemoveOrderItems(order.OrderItems);
-
-            if (order.Payment != null)
-            {
-                _orderRepository.RemovePayment(order.Payment);
-            }
-
-            _orderRepository.RemoveOrder(order);
+            order.Status = "Cancelled";
             await _orderRepository.SaveChangesAsync();
 
             return true;

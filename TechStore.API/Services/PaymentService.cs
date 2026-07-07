@@ -15,14 +15,14 @@ namespace TechStore.API.Services
 
         public async Task<List<PaymentDto>> GetAllPaymentsAsync()
         {
-            var payments = await _paymentRepository.GetAllAsync();
+            List<Payment> payments = await _paymentRepository.GetAllAsync();
 
             return payments.Select(payment => MapPaymentToDto(payment)).ToList();
         }
 
         public async Task<PaymentDto?> GetPaymentByIdAsync(int id)
         {
-            var payment = await _paymentRepository.GetByIdAsync(id);
+            Payment? payment = await _paymentRepository.GetByIdAsync(id);
 
             if (payment == null)
             {
@@ -34,14 +34,14 @@ namespace TechStore.API.Services
 
         public async Task<PaymentDto?> CreatePaymentAsync(int orderId, CreatePaymentDto dto)
         {
-            var order = await _paymentRepository.GetOrderByIdAsync(orderId);
+            Order? order = await _paymentRepository.GetOrderByIdAsync(orderId);
 
             if (order == null)
             {
                 return null;
             }
 
-            var payment = new Payment
+            Payment payment = new Payment
             {
                 OrderId = orderId,
                 Amount = order.TotalPrice,
@@ -58,7 +58,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdatePaymentAsync(int id, UpdatePaymentDto dto)
         {
-            var payment = await _paymentRepository.GetByIdAsync(id);
+            Payment? payment = await _paymentRepository.GetByIdAsync(id);
 
             if (payment == null)
             {
@@ -74,14 +74,14 @@ namespace TechStore.API.Services
 
         public async Task<bool> DeletePaymentAsync(int id)
         {
-            var payment = await _paymentRepository.GetByIdAsync(id);
+            Payment? payment = await _paymentRepository.GetByIdAsync(id);
 
             if (payment == null)
             {
                 return false;
             }
 
-            _paymentRepository.Delete(payment);
+            payment.PaymentStatus = "Cancelled";
             await _paymentRepository.SaveChangesAsync();
 
             return true;

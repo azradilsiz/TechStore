@@ -16,12 +16,15 @@ namespace TechStore.API.Repositories
 
         public async Task<List<Category>> GetAllAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories
+                .Where(category => !category.IsDeleted)
+                .ToListAsync();
         }
 
         public async Task<Category?> GetByIdAsync(int id)
         {
-            return await _context.Categories.FindAsync(id);
+            return await _context.Categories
+                .FirstOrDefaultAsync(category => category.Id == id && !category.IsDeleted);
         }
 
         public async Task AddAsync(Category category)

@@ -18,7 +18,7 @@ namespace TechStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllOrders()
         {
-            var orders = await _orderService.GetAllOrdersAsync();
+            List<OrderDto> orders = await _orderService.GetAllOrdersAsync();
 
             return Ok(orders);
         }
@@ -26,7 +26,7 @@ namespace TechStore.API.Controllers
         [HttpGet("{orderId}")]
         public async Task<IActionResult> GetOrderById(int orderId)
         {
-            var order = await _orderService.GetOrderByIdAsync(orderId);
+            OrderDto? order = await _orderService.GetOrderByIdAsync(orderId);
 
             if (order == null)
             {
@@ -39,7 +39,7 @@ namespace TechStore.API.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetOrdersByUserId(int userId)
         {
-            var orders = await _orderService.GetOrdersByUserIdAsync(userId);
+            List<OrderDto> orders = await _orderService.GetOrdersByUserIdAsync(userId);
 
             return Ok(orders);
         }
@@ -72,7 +72,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Quantity must be greater than zero.");
             }
 
-            var order = await _orderService.CreateOrderAsync(dto);
+            OrderDto? order = await _orderService.CreateOrderAsync(dto);
 
             if (order == null)
             {
@@ -95,7 +95,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("UserAddressId must be greater than zero.");
             }
 
-            var order = await _orderService.CreateOrderFromCartAsync(userId, dto);
+            OrderDto? order = await _orderService.CreateOrderFromCartAsync(userId, dto);
 
             if (order == null)
             {
@@ -113,7 +113,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Status cannot be empty.");
             }
 
-            var result = await _orderService.UpdateOrderAsync(orderId, dto);
+            bool result = await _orderService.UpdateOrderAsync(orderId, dto);
 
             if (!result)
             {
@@ -126,7 +126,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("{orderId}")]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
-            var result = await _orderService.DeleteOrderAsync(orderId);
+            bool result = await _orderService.DeleteOrderAsync(orderId);
 
             if (!result)
             {

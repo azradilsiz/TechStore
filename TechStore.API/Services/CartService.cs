@@ -15,7 +15,7 @@ namespace TechStore.API.Services
 
         public async Task<CartDto?> GetCartByUserIdAsync(int userId)
         {
-            var cart = await _cartRepository.GetByUserIdWithItemsAndProductsAsync(userId);
+            Cart? cart = await _cartRepository.GetByUserIdWithItemsAndProductsAsync(userId);
 
             if (cart == null)
             {
@@ -27,7 +27,7 @@ namespace TechStore.API.Services
 
         public async Task<CartDto> AddItemToCartAsync(AddCartItemDto dto)
         {
-            var cart = await _cartRepository.GetByUserIdWithItemsAsync(dto.UserId);
+            Cart? cart = await _cartRepository.GetByUserIdWithItemsAsync(dto.UserId);
 
             if (cart == null)
             {
@@ -40,7 +40,7 @@ namespace TechStore.API.Services
                 await _cartRepository.SaveChangesAsync();
             }
 
-            var existingItem = cart.CartItems
+            CartItem? existingItem = cart.CartItems
                 .FirstOrDefault(cartItem => cartItem.ProductId == dto.ProductId);
 
             if (existingItem != null)
@@ -49,7 +49,7 @@ namespace TechStore.API.Services
             }
             else
             {
-                var cartItem = new CartItem
+                CartItem cartItem = new CartItem
                 {
                     CartId = cart.Id,
                     ProductId = dto.ProductId,
@@ -66,7 +66,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateCartItemAsync(int cartItemId, UpdateCartItemDto dto)
         {
-            var cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
+            CartItem? cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
 
             if (cartItem == null)
             {
@@ -82,7 +82,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> RemoveCartItemAsync(int cartItemId)
         {
-            var cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
+            CartItem? cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
 
             if (cartItem == null)
             {

@@ -31,16 +31,16 @@ namespace TechStore.API.Services
 
         public async Task<int> ImportProductsAsync()
         {
-            var importedCount = 0;
+            int importedCount = 0;
 
-            var existingProducts = await _productRepository.GetAllWithCategoryAsync();
-            var existingProductNames = existingProducts
+            List<Product> existingProducts = await _productRepository.GetAllWithCategoryAsync();
+            HashSet<string> existingProductNames = existingProducts
                 .Select(product => product.Name.ToLower())
                 .ToHashSet();
 
-            foreach (var externalCategory in _categories)
+            foreach (string externalCategory in _categories)
             {
-                var response = await _httpClient.GetFromJsonAsync<ExternalProductResponseDto>(
+                ExternalProductResponseDto? response = await _httpClient.GetFromJsonAsync<ExternalProductResponseDto>(
                     $"https://dummyjson.com/products/category/{externalCategory}");
 
                 if (response == null || response.Products.Count == 0)
@@ -48,17 +48,17 @@ namespace TechStore.API.Services
                     continue;
                 }
 
-                var categoryName = MapCategoryName(externalCategory);
-                var category = await GetOrCreateCategoryAsync(categoryName);
+                string categoryName = MapCategoryName(externalCategory);
+                Category category = await GetOrCreateCategoryAsync(categoryName);
 
-                foreach (var externalProduct in response.Products)
+                foreach (ExternalProductDto externalProduct in response.Products)
                 {
                     if (existingProductNames.Contains(externalProduct.Title.ToLower()))
                     {
                         continue;
                     }
 
-                    var product = new Product
+                    Product product = new Product
                     {
                         CategoryId = category.Id,
                         Name = externalProduct.Title,
@@ -81,9 +81,9 @@ namespace TechStore.API.Services
 
         private async Task<Category> GetOrCreateCategoryAsync(string categoryName)
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            List<Category> categories = await _categoryRepository.GetAllAsync();
 
-            var existingCategory = categories.FirstOrDefault(category =>
+            Category? existingCategory = categories.FirstOrDefault(category =>
                 category.Name.ToLower() == categoryName.ToLower());
 
             if (existingCategory != null)
@@ -91,7 +91,7 @@ namespace TechStore.API.Services
                 return existingCategory;
             }
 
-            var category = new Category
+            Category category = new Category
             {
                 Name = categoryName
             };

@@ -9,6 +9,7 @@
         public string Email { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
+        public bool IsDeleted { get; set; }
         public UserType? UserType { get; set; }
 
         public ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();

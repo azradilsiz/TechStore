@@ -15,7 +15,7 @@ namespace TechStore.API.Services
 
         public async Task<List<UserDto>> GetAllUsersAsync()
         {
-            var users = await _userRepository.GetAllAsync();
+            List<User> users = await _userRepository.GetAllAsync();
 
             return users.Select(user => new UserDto
             {
@@ -30,7 +30,7 @@ namespace TechStore.API.Services
 
         public async Task<UserDto?> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            User? user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
@@ -50,7 +50,7 @@ namespace TechStore.API.Services
 
         public async Task<UserDto> CreateUserAsync(CreateUserDto dto)
         {
-            var user = new User
+            User user = new User
             {
                 UserTypeId = dto.UserTypeId,
                 UserName = dto.UserName,
@@ -79,7 +79,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateUserAsync(int id, UpdateUserDto dto)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            User? user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
@@ -99,14 +99,14 @@ namespace TechStore.API.Services
 
         public async Task<bool> DeleteUserAsync(int id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            User? user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
             {
                 return false;
             }
 
-            _userRepository.Delete(user);
+            user.IsDeleted = true;
             await _userRepository.SaveChangesAsync();
 
             return true;

@@ -15,7 +15,7 @@ namespace TechStore.API.Services
 
         public async Task<List<UserTypeDto>> GetAllUserTypesAsync()
         {
-            var userTypes = await _userTypeRepository.GetAllAsync();
+            List<UserType> userTypes = await _userTypeRepository.GetAllAsync();
 
             return userTypes.Select(userType => new UserTypeDto
             {
@@ -26,7 +26,7 @@ namespace TechStore.API.Services
 
         public async Task<UserTypeDto?> GetUserTypeByIdAsync(int id)
         {
-            var userType = await _userTypeRepository.GetByIdAsync(id);
+            UserType? userType = await _userTypeRepository.GetByIdAsync(id);
 
             if (userType == null)
             {
@@ -42,7 +42,7 @@ namespace TechStore.API.Services
 
         public async Task<UserTypeDto> CreateUserTypeAsync(CreateUserTypeDto dto)
         {
-            var userType = new UserType
+            UserType userType = new UserType
             {
                 TypeName = dto.TypeName
             };
@@ -59,7 +59,7 @@ namespace TechStore.API.Services
 
         public async Task<bool> UpdateUserTypeAsync(int id, UpdateUserTypeDto dto)
         {
-            var userType = await _userTypeRepository.GetByIdAsync(id);
+            UserType? userType = await _userTypeRepository.GetByIdAsync(id);
 
             if (userType == null)
             {
@@ -75,9 +75,16 @@ namespace TechStore.API.Services
 
         public async Task<bool> DeleteUserTypeAsync(int id)
         {
-            var userType = await _userTypeRepository.GetByIdAsync(id);
+            UserType? userType = await _userTypeRepository.GetByIdAsync(id);
 
             if (userType == null)
+            {
+                return false;
+            }
+
+            bool hasUsers = await _userTypeRepository.HasUsersAsync(id);
+
+            if (hasUsers)
             {
                 return false;
             }

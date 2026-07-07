@@ -16,12 +16,15 @@ namespace TechStore.API.Repositories
 
         public async Task<List<User>> GetAllAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Where(user => !user.IsDeleted)
+                .ToListAsync();
         }
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                .FirstOrDefaultAsync(user => user.Id == id && !user.IsDeleted);
         }
 
         public async Task AddAsync(User user)

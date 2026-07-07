@@ -9,6 +9,7 @@
         public string AddressDetail { get; set; } = string.Empty;
         public string District {  get; set; } = string.Empty;
         public string Phone {  get; set; } = string.Empty;
+        public bool IsDeleted { get; set; }
         public User? User { get; set; } 
     }
 }

@@ -18,7 +18,7 @@ namespace TechStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUserAddresses()
         {
-            var addresses = await _userAddressService.GetAllUserAddressesAsync();
+            List<UserAddressDto> addresses = await _userAddressService.GetAllUserAddressesAsync();
 
             return Ok(addresses);
         }
@@ -26,7 +26,7 @@ namespace TechStore.API.Controllers
         [HttpGet("{userAddressId}")]
         public async Task<IActionResult> GetUserAddressById(int userAddressId)
         {
-            var address = await _userAddressService.GetUserAddressByIdAsync(userAddressId);
+            UserAddressDto? address = await _userAddressService.GetUserAddressByIdAsync(userAddressId);
 
             if (address == null)
             {
@@ -39,7 +39,7 @@ namespace TechStore.API.Controllers
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserAddressesByUserId(int userId)
         {
-            var addresses = await _userAddressService.GetUserAddressesByUserIdAsync(userId);
+            List<UserAddressDto> addresses = await _userAddressService.GetUserAddressesByUserIdAsync(userId);
 
             return Ok(addresses);
         }
@@ -67,7 +67,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Address detail cannot be empty.");
             }
 
-            var address = await _userAddressService.CreateUserAddressAsync(dto);
+            UserAddressDto address = await _userAddressService.CreateUserAddressAsync(dto);
 
             return CreatedAtAction(nameof(GetUserAddressById), new { userAddressId = address.Id }, address);
         }
@@ -90,7 +90,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Address detail cannot be empty.");
             }
 
-            var result = await _userAddressService.UpdateUserAddressAsync(userAddressId, dto);
+            bool result = await _userAddressService.UpdateUserAddressAsync(userAddressId, dto);
 
             if (!result)
             {
@@ -103,7 +103,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("{userAddressId}")]
         public async Task<IActionResult> DeleteUserAddress(int userAddressId)
         {
-            var result = await _userAddressService.DeleteUserAddressAsync(userAddressId);
+            bool result = await _userAddressService.DeleteUserAddressAsync(userAddressId);
 
             if (!result)
             {

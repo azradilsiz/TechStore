@@ -18,7 +18,7 @@ namespace TechStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUserTypes()
         {
-            var userTypes = await _userTypeService.GetAllUserTypesAsync();
+            List<UserTypeDto> userTypes = await _userTypeService.GetAllUserTypesAsync();
 
             return Ok(userTypes);
         }
@@ -26,7 +26,7 @@ namespace TechStore.API.Controllers
         [HttpGet("{userTypeId}")]
         public async Task<IActionResult> GetUserTypeById(int userTypeId)
         {
-            var userType = await _userTypeService.GetUserTypeByIdAsync(userTypeId);
+            UserTypeDto? userType = await _userTypeService.GetUserTypeByIdAsync(userTypeId);
 
             if (userType == null)
             {
@@ -44,7 +44,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("User type name cannot be empty.");
             }
 
-            var userType = await _userTypeService.CreateUserTypeAsync(dto);
+            UserTypeDto userType = await _userTypeService.CreateUserTypeAsync(dto);
 
             return CreatedAtAction(nameof(GetUserTypeById), new { userTypeId = userType.Id }, userType);
         }
@@ -57,7 +57,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("User type name cannot be empty.");
             }
 
-            var result = await _userTypeService.UpdateUserTypeAsync(userTypeId, dto);
+            bool result = await _userTypeService.UpdateUserTypeAsync(userTypeId, dto);
 
             if (!result)
             {
@@ -70,7 +70,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("{userTypeId}")]
         public async Task<IActionResult> DeleteUserType(int userTypeId)
         {
-            var result = await _userTypeService.DeleteUserTypeAsync(userTypeId);
+            bool result = await _userTypeService.DeleteUserTypeAsync(userTypeId);
 
             if (!result)
             {

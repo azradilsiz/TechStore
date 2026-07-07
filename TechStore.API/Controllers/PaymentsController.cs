@@ -18,7 +18,7 @@ namespace TechStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPayments()
         {
-            var payments = await _paymentService.GetAllPaymentsAsync();
+            List<PaymentDto> payments = await _paymentService.GetAllPaymentsAsync();
 
             return Ok(payments);
         }
@@ -26,7 +26,7 @@ namespace TechStore.API.Controllers
         [HttpGet("{paymentId}")]
         public async Task<IActionResult> GetPaymentById(int paymentId)
         {
-            var payment = await _paymentService.GetPaymentByIdAsync(paymentId);
+            PaymentDto? payment = await _paymentService.GetPaymentByIdAsync(paymentId);
 
             if (payment == null)
             {
@@ -49,7 +49,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Payment method cannot be empty.");
             }
 
-            var payment = await _paymentService.CreatePaymentAsync(orderId, dto);
+            PaymentDto? payment = await _paymentService.CreatePaymentAsync(orderId, dto);
 
             if (payment == null)
             {
@@ -67,7 +67,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Payment status cannot be empty.");
             }
 
-            var result = await _paymentService.UpdatePaymentAsync(paymentId, dto);
+            bool result = await _paymentService.UpdatePaymentAsync(paymentId, dto);
 
             if (!result)
             {
@@ -80,7 +80,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("{paymentId}")]
         public async Task<IActionResult> DeletePayment(int paymentId)
         {
-            var result = await _paymentService.DeletePaymentAsync(paymentId);
+            bool result = await _paymentService.DeletePaymentAsync(paymentId);
 
             if (!result)
             {

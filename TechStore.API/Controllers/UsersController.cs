@@ -18,7 +18,7 @@ namespace TechStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userService.GetAllUsersAsync();
+            List<UserDto> users = await _userService.GetAllUsersAsync();
 
             return Ok(users);
         }
@@ -26,7 +26,7 @@ namespace TechStore.API.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
         {
-            var user = await _userService.GetUserByIdAsync(userId);
+            UserDto? user = await _userService.GetUserByIdAsync(userId);
 
             if (user == null)
             {
@@ -69,7 +69,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Email cannot be empty.");
             }
 
-            var user = await _userService.CreateUserAsync(dto);
+            UserDto user = await _userService.CreateUserAsync(dto);
 
             return CreatedAtAction(nameof(GetUserById), new { userId = user.Id }, user);
         }
@@ -102,7 +102,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Email cannot be empty.");
             }
 
-            var result = await _userService.UpdateUserAsync(userId, dto);
+            bool result = await _userService.UpdateUserAsync(userId, dto);
 
             if (!result)
             {
@@ -115,7 +115,7 @@ namespace TechStore.API.Controllers
         [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
-            var result = await _userService.DeleteUserAsync(userId);
+            bool result = await _userService.DeleteUserAsync(userId);
 
             if (!result)
             {
