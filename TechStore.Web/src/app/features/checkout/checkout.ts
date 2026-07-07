@@ -5,10 +5,11 @@ import { OrderService } from '../../core/services/order.service';
 import { PaymentService } from '../../core/services/payment.service';
 import { Order } from '../../models/order.model';
 import { Payment } from '../../models/payment.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css'
 })
