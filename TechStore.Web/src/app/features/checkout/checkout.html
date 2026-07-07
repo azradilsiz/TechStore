@@ -1,0 +1,80 @@
+<section class="checkout-page">
+  <div class="page-header">
+    <div>
+      <h2>Ödeme</h2>
+      <p>Siparişini tamamlamak için teslimat ve ödeme bilgilerini kontrol et.</p>
+    </div>
+  </div>
+
+  <div class="checkout-layout">
+    <form class="checkout-form" (ngSubmit)="completeCheckout()">
+      <div class="form-section">
+        <h3>Teslimat Bilgisi</h3>
+
+        <label for="addressId">Adres Id</label>
+        <input
+          id="addressId"
+          name="addressId"
+          type="number"
+          min="1"
+          [(ngModel)]="userAddressId"
+        />
+      </div>
+
+      <div class="form-section">
+        <h3>Ödeme Yöntemi</h3>
+
+        <label for="paymentMethod">Ödeme yöntemi</label>
+        <select
+          id="paymentMethod"
+          name="paymentMethod"
+          [(ngModel)]="paymentMethod">
+          <option value="Credit Card">Kredi Kartı</option>
+          <option value="Bank Transfer">Banka Havalesi</option>
+          <option value="Cash">Kapıda Ödeme</option>
+        </select>
+      </div>
+
+      <div class="state-box error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="state-box success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <button type="submit" class="complete-button" [disabled]="isLoading">
+        {{ isLoading ? 'İşlem yapılıyor...' : 'Siparişi Tamamla' }}
+      </button>
+    </form>
+
+    <aside class="checkout-summary">
+      <h3>İşlem Özeti</h3>
+
+      <div class="summary-row">
+        <span>Kullanıcı Id</span>
+        <strong>{{ currentUserId }}</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>Adres Id</span>
+        <strong>{{ userAddressId }}</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>Ödeme</span>
+        <strong>{{ paymentMethod }}</strong>
+      </div>
+
+      <div class="result-box" *ngIf="createdOrder">
+        <span>Sipariş No</span>
+        <strong>#{{ createdOrder.id }}</strong>
+      </div>
+
+      <div class="result-box" *ngIf="createdPayment">
+        <span>Ödeme Durumu</span>
+        <strong>{{ createdPayment.paymentStatus }}</strong>
+      </div>
+    </aside>
+  </div>
+</section>

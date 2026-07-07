@@ -45,6 +45,8 @@ builder.Services.AddScoped<UserAddressService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<PaymentService>();
 
+builder.Services.AddHttpClient<ExternalProductService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

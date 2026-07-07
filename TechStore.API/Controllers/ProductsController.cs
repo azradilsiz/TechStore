@@ -9,10 +9,14 @@ namespace TechStore.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ProductService _productService;
+        private readonly ExternalProductService _externalProductService;
 
-        public ProductsController(ProductService productService)
+        public ProductsController(
+            ProductService productService,
+            ExternalProductService externalProductService)
         {
             _productService = productService;
+            _externalProductService = externalProductService;
         }
 
         [HttpGet]
@@ -34,6 +38,18 @@ namespace TechStore.API.Controllers
             }
 
             return Ok(product);
+        }
+
+        [HttpPost("import-external")]
+        public async Task<IActionResult> ImportExternalProducts()
+        {
+            var importedCount = await _externalProductService.ImportProductsAsync();
+
+            return Ok(new
+            {
+                Message = "External products imported successfully.",
+                ImportedCount = importedCount
+            });
         }
 
         [HttpPost]
