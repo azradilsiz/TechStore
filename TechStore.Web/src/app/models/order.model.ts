@@ -10,11 +10,14 @@ export interface OrderItem {
 export interface Order {
   id: number;
   userId: number;
+  userName: string;
   userAddressId: number;
+  addressTitle: string;
   orderDate: string;
-  totalAmount: number;
+  totalPrice: number;
   status: string;
   items: OrderItem[];
+  hasPayment: boolean;
 }
 
 export interface CreateOrderFromCart {

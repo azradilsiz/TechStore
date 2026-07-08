@@ -4,25 +4,31 @@
   justify-content: space-between;
   padding: 18px 40px;
   border-bottom: 1px solid #e5e7eb;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.96);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 14px;
+  color: #111827;
+  text-decoration: none;
 }
 
 .brand-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 8px;
-  background: #111827;
+  background: linear-gradient(135deg, #0f172a, #06b6d4);
   color: #ffffff;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .brand h1 {
@@ -36,22 +42,86 @@
   font-size: 14px;
 }
 
+.header-search {
+  display: flex;
+  align-items: center;
+  width: min(420px, 34vw);
+  min-width: 260px;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.header-search input {
+  min-width: 0;
+  flex: 1;
+  height: 100%;
+  border: 0;
+  padding: 0 14px;
+  outline: none;
+  font: inherit;
+}
+
+.header-search button {
+  height: 100%;
+  border: 0;
+  padding: 0 16px;
+  background: #0f172a;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.header-search button:hover {
+  background: #0e7490;
+}
+
 .main-nav {
   display: flex;
-  gap: 18px;
+  align-items: center;
+  gap: 8px;
 }
 
 .main-nav a {
+  padding: 9px 12px;
+  border-radius: 8px;
   color: #111827;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .main-nav a:hover {
-  color: #2563eb;
+  background: #f1f5f9;
+  color: #0e7490;
+}
+
+.main-nav a.active-link {
+  background: #ecfeff;
+  color: #0e7490;
 }
 
 .app-main {
   min-height: calc(100vh - 82px);
   background: #f8fafc;
+}
+
+@media (max-width: 760px) {
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+
+  .main-nav {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .header-search {
+    width: 100%;
+    min-width: 0;
+  }
 }

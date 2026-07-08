@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420">
+  <defs>
+    <linearGradient id="cartAccent" x1="160" y1="170" x2="335" y2="250" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect x="44" y="38" width="472" height="344" rx="28" fill="#111827" opacity="0.72"/>
+  <g filter="url(#softShadow)">
+    <path d="M158 143h56c18 0 31 8 38 24l18 43h178l-38 106H260" fill="none" stroke="#ffffff" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M250 292h152" fill="none" stroke="#ffffff" stroke-width="28" stroke-linecap="round"/>
+    <path d="M174 213h132M193 250h88M216 283h42" fill="none" stroke="url(#cartAccent)" stroke-width="16" stroke-linecap="round"/>
+    <path d="M306 211l-34 106" fill="none" stroke="url(#cartAccent)" stroke-width="28" stroke-linecap="round"/>
+    <circle cx="284" cy="344" r="18" fill="#ffffff"/>
+    <circle cx="397" cy="344" r="18" fill="#ffffff"/>
+  </g>
+</svg>

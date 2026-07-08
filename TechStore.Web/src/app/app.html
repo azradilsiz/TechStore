@@ -1,16 +1,30 @@
 <header class="app-header">
-  <div class="brand">
-    <span class="brand-mark">TS</span>
+  <a class="brand" routerLink="/">
+    <span class="brand-mark">
+      TS
+    </span>
     <div>
-      <h1>Teknoloji Mağazası</h1>
-      <p>Bilgisayar, telefon ve aksesuar ürünleri</p>
+      <h1>TechStore</h1>
+      <p>Teknoloji ürünleri ve aksesuarları</p>
     </div>
-  </div>
+  </a>
+
+  <form class="header-search" (ngSubmit)="searchProducts()">
+    <input
+      type="search"
+      name="searchTerm"
+      [(ngModel)]="searchTerm"
+      placeholder="Ne arıyorsunuz?"
+      aria-label="Ürün ara"
+    >
+    <button type="submit">Ara</button>
+  </form>
 
   <nav class="main-nav">
-    <a routerLink="/products">Ürünler</a>
-    <a routerLink="/cart">Sepet</a>
-    <a routerLink="/orders">Siparişlerim</a>
+    <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Ana Sayfa</a>
+    <a routerLink="/products" routerLinkActive="active-link">Ürünler</a>
+    <a routerLink="/cart" routerLinkActive="active-link">Sepet</a>
+    <a routerLink="/orders" routerLinkActive="active-link">Siparişlerim</a>
   </nav>
 </header>
 

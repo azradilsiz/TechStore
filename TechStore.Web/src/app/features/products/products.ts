@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
 import { Product } from '../../models/product.model';
@@ -8,7 +10,7 @@ type ProductPageStatus = 'loading' | 'success' | 'empty' | 'error';
 
 @Component({
   selector: 'app-products',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './products.html',
   styleUrl: './products.css'
 })
@@ -17,16 +19,25 @@ export class Products implements OnInit {
   status: ProductPageStatus = 'loading';
   errorMessage = '';
   successMessage = '';
+  selectedCategory = '';
+  searchTerm = '';
 
+  readonly allCategoryLabel = 'Tüm Ürünler';
   currentUserId = 2;
 
   constructor(
     private productService: ProductService,
     private cartService: CartService,
+    private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      this.searchTerm = params.get('search') ?? '';
+      this.changeDetector.detectChanges();
+    });
+
     this.getProducts();
   }
 
@@ -34,6 +45,7 @@ export class Products implements OnInit {
     this.status = 'loading';
     this.errorMessage = '';
     this.successMessage = '';
+    this.selectedCategory = '';
 
     this.productService.getProducts().subscribe({
       next: (products) => {
@@ -48,6 +60,30 @@ export class Products implements OnInit {
         this.changeDetector.detectChanges();
       }
     });
+  }
+
+  get categories(): string[] {
+    const categoryNames = this.products
+      .map((product) => product.categoryName)
+      .filter((categoryName) => categoryName);
+
+    return Array.from(new Set(categoryNames));
+  }
+
+  get filteredProducts(): Product[] {
+    const normalizedSearchTerm = this.searchTerm.trim().toLocaleLowerCase('tr-TR');
+
+    return this.products.filter((product) => {
+      const matchesCategory = !this.selectedCategory || product.categoryName === this.selectedCategory;
+      const searchableText = `${product.name} ${product.description} ${product.categoryName}`.toLocaleLowerCase('tr-TR');
+      const matchesSearch = !normalizedSearchTerm || searchableText.includes(normalizedSearchTerm);
+
+      return matchesCategory && matchesSearch;
+    });
+  }
+
+  selectCategory(categoryName: string): void {
+    this.selectedCategory = categoryName;
   }
 
   addToCart(product: Product): void {

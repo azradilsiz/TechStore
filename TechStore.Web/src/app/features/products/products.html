@@ -22,8 +22,42 @@
     Henüz ürün bulunmamaktadır.
   </div>
 
-  <div class="product-grid" *ngIf="status === 'success'">
-    <article class="product-card" *ngFor="let product of products">
+  <div class="product-toolbar" *ngIf="status === 'success'">
+    <div class="category-filter">
+      <button
+        type="button"
+        [class.active]="selectedCategory === ''"
+        (click)="selectCategory('')"
+      >
+        {{ allCategoryLabel }}
+      </button>
+
+      <button
+        type="button"
+        *ngFor="let category of categories"
+        [class.active]="selectedCategory === category"
+        (click)="selectCategory(category)"
+      >
+        {{ category }}
+      </button>
+    </div>
+
+    <label class="product-search">
+      <span>Ürün ara</span>
+      <input
+        type="search"
+        [(ngModel)]="searchTerm"
+        placeholder="Telefon, laptop, aksesuar..."
+      >
+    </label>
+  </div>
+
+  <div class="state-box" *ngIf="status === 'success' && filteredProducts.length === 0">
+    Aradığın kriterlere uygun ürün bulunamadı.
+  </div>
+
+  <div class="product-grid" *ngIf="status === 'success' && filteredProducts.length > 0">
+    <article class="product-card" *ngFor="let product of filteredProducts">
       <div class="image-wrap">
         <img
           [src]="product.imageUrl"
