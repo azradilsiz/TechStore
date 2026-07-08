@@ -38,7 +38,7 @@
         [class.active]="selectedCategory === category"
         (click)="selectCategory(category)"
       >
-        {{ category }}
+        {{ getCategoryLabel(category) }}
       </button>
     </div>
 
@@ -46,7 +46,8 @@
       <span>Ürün ara</span>
       <input
         type="search"
-        [(ngModel)]="searchTerm"
+        [ngModel]="searchTerm"
+        (ngModelChange)="onSearchTermChange($event)"
         placeholder="Telefon, laptop, aksesuar..."
       >
     </label>
@@ -67,7 +68,7 @@
       </div>
 
       <div class="product-info">
-        <span class="category">{{ product.categoryName }}</span>
+        <span class="category">{{ getCategoryLabel(product.categoryName) }}</span>
 
         <h3>{{ product.name }}</h3>
 
@@ -80,9 +81,12 @@
         <div class="product-footer">
           <strong>{{ product.price }} TL</strong>
 
-          <button type="button" (click)="addToCart(product)">
-            Sepete Ekle
-          </button>
+          <div class="product-actions">
+            <a [routerLink]="['/products', product.id]">Detayları Gör</a>
+            <button type="button" (click)="addToCart(product)">
+              Sepete Ekle
+            </button>
+          </div>
         </div>
       </div>
     </article>

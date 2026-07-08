@@ -16,4 +16,10 @@ export class ProductService {
       timeout(10000)
     );
   }
+
+  getProductById(productId: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/${productId}`).pipe(
+      timeout(10000)
+    );
+  }
 }

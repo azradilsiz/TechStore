@@ -22,11 +22,47 @@
 
   <nav class="main-nav">
     <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Ana Sayfa</a>
+    <button class="menu-trigger" type="button" (click)="toggleCategoryMenu()">Kategoriler</button>
     <a routerLink="/products" routerLinkActive="active-link">Ürünler</a>
     <a routerLink="/cart" routerLinkActive="active-link">Sepet</a>
     <a routerLink="/orders" routerLinkActive="active-link">Siparişlerim</a>
   </nav>
 </header>
+
+<div class="category-overlay" *ngIf="isCategoryMenuOpen" (click)="closeCategoryMenu()"></div>
+
+<aside class="category-menu" *ngIf="isCategoryMenuOpen">
+  <div class="category-menu-header">
+    <h2>Kategoriler</h2>
+    <button type="button" (click)="closeCategoryMenu()" aria-label="Kategorileri kapat">×</button>
+  </div>
+
+  <div class="category-menu-content">
+    <section>
+      <h3>Tüm Kategoriler</h3>
+      <a
+        *ngFor="let category of menuCategories"
+        routerLink="/products"
+        [queryParams]="{ category: category.value }"
+        (click)="closeCategoryMenu()"
+      >
+        {{ category.label }}
+      </a>
+    </section>
+
+    <section>
+      <h3>Popüler Aramalar</h3>
+      <a
+        *ngFor="let search of popularSearches"
+        routerLink="/products"
+        [queryParams]="{ search: search }"
+        (click)="closeCategoryMenu()"
+      >
+        {{ search }}
+      </a>
+    </section>
+  </div>
+</aside>
 
 <main class="app-main">
   <router-outlet></router-outlet>

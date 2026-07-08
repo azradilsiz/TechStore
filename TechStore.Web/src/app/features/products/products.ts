@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
 import { Product } from '../../models/product.model';
@@ -10,7 +10,7 @@ type ProductPageStatus = 'loading' | 'success' | 'empty' | 'error';
 
 @Component({
   selector: 'app-products',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './products.html',
   styleUrl: './products.css'
 })
@@ -35,6 +35,7 @@ export class Products implements OnInit {
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
       this.searchTerm = params.get('search') ?? '';
+      this.selectedCategory = params.get('category') ?? '';
       this.changeDetector.detectChanges();
     });
 
@@ -45,7 +46,6 @@ export class Products implements OnInit {
     this.status = 'loading';
     this.errorMessage = '';
     this.successMessage = '';
-    this.selectedCategory = '';
 
     this.productService.getProducts().subscribe({
       next: (products) => {
@@ -75,7 +75,7 @@ export class Products implements OnInit {
 
     return this.products.filter((product) => {
       const matchesCategory = !this.selectedCategory || product.categoryName === this.selectedCategory;
-      const searchableText = `${product.name} ${product.description} ${product.categoryName}`.toLocaleLowerCase('tr-TR');
+      const searchableText = `${product.name} ${product.description} ${this.getCategoryLabel(product.categoryName)}`.toLocaleLowerCase('tr-TR');
       const matchesSearch = !normalizedSearchTerm || searchableText.includes(normalizedSearchTerm);
 
       return matchesCategory && matchesSearch;
@@ -84,6 +84,24 @@ export class Products implements OnInit {
 
   selectCategory(categoryName: string): void {
     this.selectedCategory = categoryName;
+    this.searchTerm = '';
+  }
+
+  onSearchTermChange(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+    this.selectedCategory = '';
+  }
+
+  getCategoryLabel(categoryName: string): string {
+    const categoryLabels: Record<string, string> = {
+      'mobile-accessories': 'Aksesuar',
+      smartphones: 'Telefon',
+      laptops: 'Laptop',
+      tablets: 'Tablet',
+      telephone: 'Telefon'
+    };
+
+    return categoryLabels[categoryName] ?? categoryName;
   }
 
   addToCart(product: Product): void {

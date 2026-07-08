@@ -1,15 +1,37 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
+interface MenuCategory {
+  label: string;
+  value: string;
+}
+
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   searchTerm = '';
+  isCategoryMenuOpen = false;
+
+  readonly menuCategories: MenuCategory[] = [
+    { label: 'Telefon', value: 'Telefon' },
+    { label: 'Laptop', value: 'Laptop' },
+    { label: 'Tablet', value: 'Tablet' },
+    { label: 'Mouse', value: 'Mouse' },
+    { label: 'Aksesuar', value: 'mobile-accessories' }
+  ];
+
+  readonly popularSearches = [
+    'iPhone',
+    'Samsung',
+    'MacBook',
+    'Logitech'
+  ];
 
   constructor(private router: Router) {}
 
@@ -19,5 +41,13 @@ export class App {
     this.router.navigate(['/products'], {
       queryParams: query ? { search: query } : {}
     });
+  }
+
+  toggleCategoryMenu(): void {
+    this.isCategoryMenuOpen = !this.isCategoryMenuOpen;
+  }
+
+  closeCategoryMenu(): void {
+    this.isCategoryMenuOpen = false;
   }
 }

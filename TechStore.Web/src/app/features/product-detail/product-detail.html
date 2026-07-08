@@ -1,0 +1,36 @@
+<section class="product-detail-page">
+  <a routerLink="/products" class="back-link">Ürünlere dön</a>
+
+  <div class="state-box" *ngIf="status === 'loading'">
+    Ürün detayı yükleniyor...
+  </div>
+
+  <div class="state-box error-message" *ngIf="status === 'error'">
+    {{ errorMessage }}
+  </div>
+
+  <div class="detail-layout" *ngIf="status === 'success' && product">
+    <div class="detail-image-wrap">
+      <img [src]="product.imageUrl" [alt]="product.name">
+    </div>
+
+    <div class="detail-info">
+      <span class="category">{{ getCategoryLabel(product.categoryName) }}</span>
+      <h2>{{ product.name }}</h2>
+      <p class="description">{{ product.description }}</p>
+
+      <div class="detail-meta">
+        <span>Stok: {{ product.stock }}</span>
+        <strong>{{ product.price }} TL</strong>
+      </div>
+
+      <div class="state-box success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <button type="button" (click)="addToCart()">
+        Sepete Ekle
+      </button>
+    </div>
+  </div>
+</section>
