@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using TechStore.API.DTOs.Users;
 using TechStore.API.Entities;
 using TechStore.API.Repositories.Interfaces;
@@ -7,10 +8,14 @@ namespace TechStore.API.Services
     public class UserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(
+            IUserRepository userRepository,
+            IPasswordHasher<User> passwordHasher)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<List<UserDto>> GetAllUsersAsync()
@@ -56,12 +61,10 @@ namespace TechStore.API.Services
                 UserName = dto.UserName,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                Email = dto.Email,
-
-                // Şimdilik düz metni kaydediyoruz.
-                // JWT ve güvenlik kısmına geçtiğimizde hash'leyeceğiz.
-                PasswordHash = dto.Password
+                Email = dto.Email
             };
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();

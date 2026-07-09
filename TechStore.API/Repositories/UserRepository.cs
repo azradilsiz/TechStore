@@ -27,6 +27,13 @@ namespace TechStore.API.Repositories
                 .FirstOrDefaultAsync(user => user.Id == id && !user.IsDeleted);
         }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _context.Users
+                .Include(user => user.UserType)
+                .FirstOrDefaultAsync(user => user.Email == email && !user.IsDeleted);
+        }
+
         public async Task AddAsync(User user)
         {
             await _context.Users.AddAsync(user);

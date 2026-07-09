@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TechStore.API.Data;
+using TechStore.API.Entities;
 using TechStore.API.Repositories;
 using TechStore.API.Repositories.Interfaces;
 using TechStore.API.Services;
@@ -36,10 +38,13 @@ builder.Services.AddScoped<IUserAddressRepository, UserAddressRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserTypeService>();
 builder.Services.AddScoped<UserAddressService>();
 builder.Services.AddScoped<OrderService>();
