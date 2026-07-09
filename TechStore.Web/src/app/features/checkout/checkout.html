@@ -156,9 +156,9 @@
         <strong>#{{ createdOrder.id }}</strong>
       </div>
 
-      <div class="result-box" *ngIf="createdPayment">
+      <div class="result-box" *ngIf="createdOrder?.hasPayment">
         <span>Ödeme Durumu</span>
-        <strong>{{ createdPayment.paymentStatus }}</strong>
+        <strong>Pending</strong>
       </div>
     </aside>
   </div>

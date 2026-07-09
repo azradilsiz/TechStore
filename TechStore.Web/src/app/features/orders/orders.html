@@ -27,9 +27,11 @@
         </div>
 
         <div class="status-group">
-          <span class="status-badge">{{ order.status }}</span>
-          <span class="payment-badge" [class.waiting]="!order.hasPayment">
-            {{ getPaymentLabel(order.hasPayment) }}
+          <span class="status-badge" [class.cancelled]="isOrderCancelled(order.status)">
+            {{ getOrderStatusLabel(order.status) }}
+          </span>
+          <span class="payment-badge" *ngIf="!isOrderCancelled(order.status)" [class.waiting]="!order.hasPayment">
+            {{ getPaymentLabel(order) }}
           </span>
         </div>
       </div>

@@ -95,6 +95,11 @@ namespace TechStore.API.Controllers
                 return BadRequest("UserAddressId must be greater than zero.");
             }
 
+            if (string.IsNullOrWhiteSpace(dto.PaymentMethod))
+            {
+                return BadRequest("Payment method cannot be empty.");
+            }
+
             OrderDto? order = await _orderService.CreateOrderFromCartAsync(userId, dto);
 
             if (order == null)

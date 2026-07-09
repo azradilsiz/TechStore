@@ -19,10 +19,10 @@ export class App {
   isCategoryMenuOpen = false;
 
   readonly menuCategories: MenuCategory[] = [
-    { label: 'Telefon', value: 'Telefon' },
-    { label: 'Laptop', value: 'Laptop' },
-    { label: 'Tablet', value: 'Tablet' },
-    { label: 'Mouse', value: 'Mouse' },
+    { label: 'Telefon', value: 'smartphones' },
+    { label: 'Laptop', value: 'laptops' },
+    { label: 'Tablet', value: 'tablets' },
+    { label: 'Mouse', value: 'mouse' },
     { label: 'Aksesuar', value: 'mobile-accessories' }
   ];
 

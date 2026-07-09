@@ -45,7 +45,21 @@ export class OrdersComponent implements OnInit {
     });
   }
 
-  getPaymentLabel(hasPayment: boolean): string {
-    return hasPayment ? 'Ödeme kaydı var' : 'Ödeme bekleniyor';
+  getOrderStatusLabel(status: string): string {
+    const statusLabels: Record<string, string> = {
+      pending: 'Sipariş alındı',
+      completed: 'Tamamlandı',
+      cancelled: 'İptal edildi'
+    };
+
+    return statusLabels[status.trim().toLocaleLowerCase('tr-TR')] ?? status;
+  }
+
+  isOrderCancelled(status: string): boolean {
+    return status.trim().toLocaleLowerCase('tr-TR') === 'cancelled';
+  }
+
+  getPaymentLabel(order: Order): string {
+    return order.hasPayment ? 'Ödeme bilgisi oluşturuldu' : 'Ödeme bilgisi eksik';
   }
 }

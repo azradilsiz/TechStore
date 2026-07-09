@@ -22,4 +22,5 @@ export interface Order {
 
 export interface CreateOrderFromCart {
   userAddressId: number;
+  paymentMethod: string;
 }

@@ -72,9 +72,13 @@ export class ProductsComponent implements OnInit {
 
   get filteredProducts(): Product[] {
     const normalizedSearchTerm = this.searchTerm.trim().toLocaleLowerCase('tr-TR');
+    const selectedCategoryKey = this.getCategoryKey(this.selectedCategory);
 
     return this.products.filter((product) => {
-      const matchesCategory = !this.selectedCategory || product.categoryName === this.selectedCategory;
+      const productCategoryKey = this.getCategoryKey(product.categoryName);
+      const matchesCategory =
+        !selectedCategoryKey ||
+        productCategoryKey === selectedCategoryKey;
       const searchableText = `${product.name} ${product.description} ${this.getCategoryLabel(product.categoryName)}`.toLocaleLowerCase('tr-TR');
       const matchesSearch = !normalizedSearchTerm || searchableText.includes(normalizedSearchTerm);
 
@@ -98,10 +102,31 @@ export class ProductsComponent implements OnInit {
       smartphones: 'Telefon',
       laptops: 'Laptop',
       tablets: 'Tablet',
-      telephone: 'Telefon'
+      mouse: 'Mouse'
     };
 
-    return categoryLabels[categoryName] ?? categoryName;
+    return categoryLabels[this.getCategoryKey(categoryName)] ?? categoryName;
+  }
+
+  private getCategoryKey(categoryName: string): string {
+    const normalizedCategoryName = categoryName.trim().toLocaleLowerCase('tr-TR');
+    const categoryKeys: Record<string, string> = {
+      telefon: 'smartphones',
+      telephone: 'smartphones',
+      smartphone: 'smartphones',
+      smartphones: 'smartphones',
+      laptop: 'laptops',
+      laptops: 'laptops',
+      tablet: 'tablets',
+      tablets: 'tablets',
+      mouse: 'mouse',
+      aksesuar: 'mobile-accessories',
+      accessory: 'mobile-accessories',
+      accessories: 'mobile-accessories',
+      'mobile-accessories': 'mobile-accessories'
+    };
+
+    return categoryKeys[normalizedCategoryName] ?? normalizedCategoryName;
   }
 
   addToCart(product: Product): void {

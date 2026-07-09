@@ -2,10 +2,8 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { OrderService } from '../../core/services/order.service';
-import { PaymentService } from '../../core/services/payment.service';
 import { UserAddressService } from '../../core/services/user-address.service';
 import { Order } from '../../models/order.model';
-import { Payment } from '../../models/payment.model';
 import { CreateUserAddress, UserAddress } from '../../models/user-address.model';
 
 @Component({
@@ -33,11 +31,9 @@ export class CheckoutComponent implements OnInit {
   successMessage = '';
 
   createdOrder: Order | null = null;
-  createdPayment: Payment | null = null;
 
   constructor(
     private orderService: OrderService,
-    private paymentService: PaymentService,
     private userAddressService: UserAddressService,
     private changeDetector: ChangeDetectorRef
   ) {}
@@ -129,36 +125,20 @@ export class CheckoutComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
     this.createdOrder = null;
-    this.createdPayment = null;
 
     this.orderService.createOrderFromCart(this.currentUserId, {
-      userAddressId: this.selectedAddressId
+      userAddressId: this.selectedAddressId,
+      paymentMethod: this.paymentMethod
     }).subscribe({
       next: (order) => {
         this.createdOrder = order;
-        this.createPayment(order.id);
-      },
-      error: () => {
-        this.isLoading = false;
-        this.errorMessage = 'Sipariş oluşturulurken bir hata oluştu.';
-        this.changeDetector.detectChanges();
-      }
-    });
-  }
-
-  private createPayment(orderId: number): void {
-    this.paymentService.createPayment(orderId, {
-      paymentMethod: this.paymentMethod
-    }).subscribe({
-      next: (payment) => {
-        this.createdPayment = payment;
         this.isLoading = false;
         this.successMessage = 'Siparişiniz ve ödemeniz başarıyla oluşturuldu.';
         this.changeDetector.detectChanges();
       },
       error: () => {
         this.isLoading = false;
-        this.errorMessage = 'Ödeme oluşturulurken bir hata oluştu.';
+        this.errorMessage = 'Sipariş veya ödeme oluşturulurken bir hata oluştu.';
         this.changeDetector.detectChanges();
       }
     });

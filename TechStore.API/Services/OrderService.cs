@@ -117,6 +117,14 @@ namespace TechStore.API.Services
             order.TotalPrice = order.OrderItems
                 .Sum(item => item.UnitPrice * item.Quantity);
 
+            order.Payment = new Payment
+            {
+                Amount = order.TotalPrice,
+                PaymentMethod = dto.PaymentMethod,
+                PaymentStatus = "Pending",
+                PaymentDate = DateTime.UtcNow
+            };
+
             await _orderRepository.AddAsync(order);
             _orderRepository.RemoveCartItems(cart.CartItems);
 

@@ -71,6 +71,11 @@
   font-weight: 700;
 }
 
+.status-badge.cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
 .status-group {
   display: flex;
   flex-wrap: wrap;
