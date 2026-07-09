@@ -44,4 +44,8 @@ export class OrdersComponent implements OnInit {
       }
     });
   }
+
+  getPaymentLabel(hasPayment: boolean): string {
+    return hasPayment ? 'Ödeme kaydı var' : 'Ödeme bekleniyor';
+  }
 }

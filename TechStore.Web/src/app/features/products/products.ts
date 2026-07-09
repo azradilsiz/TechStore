@@ -14,7 +14,7 @@ type ProductPageStatus = 'loading' | 'success' | 'empty' | 'error';
   templateUrl: './products.html',
   styleUrl: './products.css'
 })
-export class Products implements OnInit {
+export class ProductsComponent implements OnInit {
   products: Product[] = [];
   status: ProductPageStatus = 'loading';
   errorMessage = '';

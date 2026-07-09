@@ -26,12 +26,24 @@
           <p>{{ order.orderDate | date: 'dd.MM.yyyy HH:mm' }}</p>
         </div>
 
-        <span class="status-badge">{{ order.status }}</span>
+        <div class="status-group">
+          <span class="status-badge">{{ order.status }}</span>
+          <span class="payment-badge" [class.waiting]="!order.hasPayment">
+            {{ getPaymentLabel(order.hasPayment) }}
+          </span>
+        </div>
       </div>
 
-      <div class="order-summary">
-        <span>Toplam Tutar</span>
-        <strong>{{ order.totalPrice }} TL</strong>
+      <div class="order-details">
+        <div>
+          <span>Teslimat</span>
+          <strong>{{ order.addressTitle || 'Adres bilgisi yok' }}</strong>
+        </div>
+
+        <div>
+          <span>Toplam Tutar</span>
+          <strong>{{ order.totalPrice }} TL</strong>
+        </div>
       </div>
 
       <div class="order-items">

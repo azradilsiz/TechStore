@@ -9,26 +9,109 @@
   <div class="checkout-layout">
     <form class="checkout-form" (ngSubmit)="completeCheckout()">
       <div class="form-section">
-        <h3>Teslimat Bilgisi</h3>
+        <div class="section-title-row">
+          <h3>Teslimat Bilgisi</h3>
+          <button class="secondary-action" type="button" (click)="toggleAddressForm()">
+            {{ isAddressFormVisible ? 'Vazgeç' : 'Yeni Adres Ekle' }}
+          </button>
+        </div>
 
-        <label for="addressId">Adres Id</label>
-        <input
-          id="addressId"
-          name="addressId"
-          type="number"
-          min="1"
-          [(ngModel)]="userAddressId"
-        />
+        <div class="state-box" *ngIf="isAddressLoading">
+          Adresler yükleniyor...
+        </div>
+
+        <div class="state-box error-message" *ngIf="addressErrorMessage">
+          {{ addressErrorMessage }}
+        </div>
+
+        <div class="state-box success-message" *ngIf="addressSuccessMessage">
+          {{ addressSuccessMessage }}
+        </div>
+
+        <div class="address-form" *ngIf="isAddressFormVisible">
+          <label for="addressTitle">Adres başlığı</label>
+          <input
+            id="addressTitle"
+            name="addressTitle"
+            type="text"
+            placeholder="Adres başlığı girin"
+            [(ngModel)]="newAddress.title"
+            [ngModelOptions]="{ standalone: true }"
+          >
+
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="city">Şehir</label>
+              <input
+                id="city"
+                type="text"
+                placeholder="Şehir girin"
+                [(ngModel)]="newAddress.city"
+                [ngModelOptions]="{ standalone: true }"
+              >
+            </div>
+
+            <div class="field-group">
+              <label for="district">İlçe</label>
+              <input
+                id="district"
+                type="text"
+                placeholder="İlçe girin"
+                [(ngModel)]="newAddress.district"
+                [ngModelOptions]="{ standalone: true }"
+              >
+            </div>
+          </div>
+
+          <label for="addressDetail">Adres detayı</label>
+          <textarea
+            id="addressDetail"
+            name="addressDetail"
+            rows="3"
+            placeholder="Açık adresinizi girin"
+            [(ngModel)]="newAddress.addressDetail"
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+          <label for="phone">Telefon</label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder="Telefon numaranızı girin"
+            [(ngModel)]="newAddress.phone"
+            [ngModelOptions]="{ standalone: true }"
+          >
+
+          <button class="save-address-button" type="button" (click)="saveAddress()" [disabled]="isAddressSaving">
+            {{ isAddressSaving ? 'Adres kaydediliyor...' : 'Adresi Kaydet' }}
+          </button>
+        </div>
+
+        <div class="state-box" *ngIf="!isAddressLoading && !addressErrorMessage && addresses.length === 0">
+          Kayıtlı teslimat adresi bulunamadı. Siparişe devam etmek için yeni adres eklemelisin.
+        </div>
+
+        <label for="addressId" *ngIf="addresses.length > 0">Teslimat adresi</label>
+        <select id="addressId" name="addressId" [(ngModel)]="selectedAddressId" *ngIf="addresses.length > 0">
+          <option [ngValue]="address.id" *ngFor="let address of addresses">
+            {{ address.title || 'Adres' }} - {{ address.city }} / {{ address.district }}
+          </option>
+        </select>
+
+        <div class="address-preview" *ngIf="selectedAddress">
+          <strong>{{ selectedAddress.title || 'Teslimat Adresi' }}</strong>
+          <span>{{ selectedAddress.addressDetail }}</span>
+          <span>{{ selectedAddress.district }} / {{ selectedAddress.city }}</span>
+          <span>{{ selectedAddress.phone }}</span>
+        </div>
       </div>
 
       <div class="form-section">
         <h3>Ödeme Yöntemi</h3>
 
         <label for="paymentMethod">Ödeme yöntemi</label>
-        <select
-          id="paymentMethod"
-          name="paymentMethod"
-          [(ngModel)]="paymentMethod">
+        <select id="paymentMethod" name="paymentMethod" [(ngModel)]="paymentMethod">
           <option value="Credit Card">Kredi Kartı</option>
           <option value="Bank Transfer">Banka Havalesi</option>
           <option value="Cash">Kapıda Ödeme</option>
@@ -52,18 +135,20 @@
       <h3>İşlem Özeti</h3>
 
       <div class="summary-row">
-        <span>Kullanıcı Id</span>
-        <strong>{{ currentUserId }}</strong>
+        <span>Teslimat adresi</span>
+        <strong>{{ selectedAddress?.title || '-' }}</strong>
       </div>
 
       <div class="summary-row">
-        <span>Adres Id</span>
-        <strong>{{ userAddressId }}</strong>
+        <span>Adres</span>
+        <strong>
+          {{ selectedAddress ? selectedAddress.district + ' / ' + selectedAddress.city : '-' }}
+        </strong>
       </div>
 
       <div class="summary-row">
         <span>Ödeme</span>
-        <strong>{{ paymentMethod }}</strong>
+        <strong>{{ getPaymentMethodLabel(paymentMethod) }}</strong>
       </div>
 
       <div class="result-box" *ngIf="createdOrder">

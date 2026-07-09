@@ -4,7 +4,7 @@ import { CheckoutComponent } from './features/checkout/checkout';
 import { HomeComponent } from './features/home/home';
 import { OrdersComponent } from './features/orders/orders';
 import { ProductDetailComponent } from './features/product-detail/product-detail';
-import { Products } from './features/products/products';
+import { ProductsComponent } from './features/products/products';
 
 export const routes: Routes = [
   {
@@ -13,7 +13,7 @@ export const routes: Routes = [
   },
   {
     path: 'products',
-    component: Products
+    component: ProductsComponent
   },
   {
     path: 'products/:productId',
