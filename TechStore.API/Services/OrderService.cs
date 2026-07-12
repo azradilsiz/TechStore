@@ -133,6 +133,61 @@ namespace TechStore.API.Services
             return await GetOrderByIdAsync(order.Id);
         }
 
+        public async Task<OrderDto?> CreateGuestOrderAsync(CreateGuestOrderDto dto)
+        {
+            List<int> productIds = dto.Items
+                .Select(item => item.ProductId)
+                .Distinct()
+                .ToList();
+
+            Dictionary<int, Product> products = await _orderRepository.GetProductsByIdsAsync(productIds);
+
+            if (products.Count != productIds.Count)
+            {
+                return null;
+            }
+
+            Order order = new Order
+            {
+                OrderDate = DateTime.UtcNow,
+                Status = "Pending",
+                GuestFullName = $"{dto.FirstName} {dto.LastName}".Trim(),
+                GuestEmail = dto.Email,
+                GuestPhone = dto.Phone,
+                GuestCity = dto.City,
+                GuestDistrict = dto.District,
+                GuestAddressDetail = dto.AddressDetail
+            };
+
+            foreach (CreateOrderItemDto item in dto.Items)
+            {
+                Product product = products[item.ProductId];
+
+                order.OrderItems.Add(new OrderItem
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = product.Price
+                });
+            }
+
+            order.TotalPrice = order.OrderItems
+                .Sum(item => item.UnitPrice * item.Quantity);
+
+            order.Payment = new Payment
+            {
+                Amount = order.TotalPrice,
+                PaymentMethod = dto.PaymentMethod,
+                PaymentStatus = "Pending",
+                PaymentDate = DateTime.UtcNow
+            };
+
+            await _orderRepository.AddAsync(order);
+            await _orderRepository.SaveChangesAsync();
+
+            return await GetOrderByIdAsync(order.Id);
+        }
+
         public async Task<bool> UpdateOrderAsync(int id, UpdateOrderDto dto)
         {
             Order? order = await _orderRepository.GetByIdAsync(id);
@@ -176,7 +231,13 @@ namespace TechStore.API.Services
                 UserAddressId = order.UserAddressId,
                 AddressTitle = order.UserAddress != null
                     ? order.UserAddress.Title
-                    : string.Empty,
+                    : order.GuestFullName,
+                GuestFullName = order.GuestFullName,
+                GuestEmail = order.GuestEmail,
+                GuestPhone = order.GuestPhone,
+                GuestAddress = string.IsNullOrWhiteSpace(order.GuestAddressDetail)
+                    ? string.Empty
+                    : $"{order.GuestAddressDetail}, {order.GuestDistrict} / {order.GuestCity}",
                 TotalPrice = order.TotalPrice,
                 OrderDate = order.OrderDate,
                 Status = order.Status,

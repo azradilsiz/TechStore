@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CartService } from '../../core/services/cart.service';
-import { Cart } from '../../models/cart.model';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
+import { CartService } from '../../core/services/cart.service';
+import { LocalCartService } from '../../core/services/local-cart.service';
+import { Cart } from '../../models/cart.model';
 
 @Component({
   selector: 'app-cart',
@@ -14,21 +17,29 @@ export class CartComponent implements OnInit {
   cart: Cart | null = null;
   isLoading = false;
   errorMessage = '';
-
-  currentUserId = 2;
+  currentUserId: number | null = null;
 
   constructor(
+    private authService: AuthService,
     private cartService: CartService,
+    private localCartService: LocalCartService,
     private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.currentUserId = this.authService.getCurrentUserId();
     this.getCart();
   }
 
   getCart(): void {
-    this.isLoading = true;
     this.errorMessage = '';
+
+    if (!this.currentUserId) {
+      this.cart = this.localCartService.getCart();
+      return;
+    }
+
+    this.isLoading = true;
 
     this.cartService.getCartByUserId(this.currentUserId).subscribe({
       next: (cart) => {
@@ -36,9 +47,9 @@ export class CartComponent implements OnInit {
         this.isLoading = false;
         this.changeDetector.detectChanges();
       },
-      error: () => {
+      error: (error: HttpErrorResponse) => {
         this.cart = null;
-        this.errorMessage = 'Sepet yüklenirken bir hata oluştu.';
+        this.errorMessage = error.status === 404 ? '' : 'Sepet yüklenirken bir hata oluştu.';
         this.isLoading = false;
         this.changeDetector.detectChanges();
       }
@@ -58,6 +69,11 @@ export class CartComponent implements OnInit {
   }
 
   updateQuantity(cartItemId: number, quantity: number): void {
+    if (!this.currentUserId) {
+      this.cart = this.localCartService.updateItem(cartItemId, quantity);
+      return;
+    }
+
     this.cartService.updateCartItem(cartItemId, { quantity }).subscribe({
       next: () => {
         this.getCart();
@@ -70,6 +86,11 @@ export class CartComponent implements OnInit {
   }
 
   removeItem(cartItemId: number): void {
+    if (!this.currentUserId) {
+      this.cart = this.localCartService.removeItem(cartItemId);
+      return;
+    }
+
     this.cartService.removeCartItem(cartItemId).subscribe({
       next: () => {
         this.getCart();

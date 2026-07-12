@@ -9,10 +9,14 @@ export interface OrderItem {
 
 export interface Order {
   id: number;
-  userId: number;
+  userId: number | null;
   userName: string;
-  userAddressId: number;
+  userAddressId: number | null;
   addressTitle: string;
+  guestFullName: string;
+  guestEmail: string;
+  guestPhone: string;
+  guestAddress: string;
   orderDate: string;
   totalPrice: number;
   status: string;
@@ -23,4 +27,21 @@ export interface Order {
 export interface CreateOrderFromCart {
   userAddressId: number;
   paymentMethod: string;
+}
+
+export interface CreateGuestOrder {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  district: string;
+  addressDetail: string;
+  paymentMethod: string;
+  items: CreateOrderItem[];
+}
+
+export interface CreateOrderItem {
+  productId: number;
+  quantity: number;
 }

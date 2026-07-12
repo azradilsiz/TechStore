@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
+import { LocalCartService } from '../../core/services/local-cart.service';
 import { ProductService } from '../../core/services/product.service';
 import { Product } from '../../models/product.model';
 
@@ -19,12 +21,12 @@ export class ProductDetailComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  currentUserId = 2;
-
   constructor(
+    private authService: AuthService,
     private route: ActivatedRoute,
     private productService: ProductService,
     private cartService: CartService,
+    private localCartService: LocalCartService,
     private changeDetector: ChangeDetectorRef
   ) {}
 
@@ -79,8 +81,17 @@ export class ProductDetailComponent implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';
 
+    const currentUserId = this.authService.getCurrentUserId();
+
+    if (!currentUserId) {
+      this.localCartService.addItem(this.product);
+      this.successMessage = `${this.product.name} sepete eklendi.`;
+      this.changeDetector.detectChanges();
+      return;
+    }
+
     this.cartService.addItemToCart({
-      userId: this.currentUserId,
+      userId: currentUserId,
       productId: this.product.id,
       quantity: 1
     }).subscribe({

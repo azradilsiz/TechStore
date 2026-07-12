@@ -110,6 +110,74 @@ namespace TechStore.API.Controllers
             return CreatedAtAction(nameof(GetOrderById), new { orderId = order.Id }, order);
         }
 
+        [HttpPost("guest")]
+        public async Task<IActionResult> CreateGuestOrder(CreateGuestOrderDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.FirstName))
+            {
+                return BadRequest("First name cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.LastName))
+            {
+                return BadRequest("Last name cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                return BadRequest("Email cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Phone))
+            {
+                return BadRequest("Phone cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.City))
+            {
+                return BadRequest("City cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.District))
+            {
+                return BadRequest("District cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.AddressDetail))
+            {
+                return BadRequest("Address detail cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.PaymentMethod))
+            {
+                return BadRequest("Payment method cannot be empty.");
+            }
+
+            if (dto.Items.Count == 0)
+            {
+                return BadRequest("Order must contain at least one item.");
+            }
+
+            if (dto.Items.Any(item => item.ProductId <= 0))
+            {
+                return BadRequest("ProductId must be greater than zero.");
+            }
+
+            if (dto.Items.Any(item => item.Quantity <= 0))
+            {
+                return BadRequest("Quantity must be greater than zero.");
+            }
+
+            OrderDto? order = await _orderService.CreateGuestOrderAsync(dto);
+
+            if (order == null)
+            {
+                return BadRequest("One or more products could not be found.");
+            }
+
+            return CreatedAtAction(nameof(GetOrderById), new { orderId = order.Id }, order);
+        }
+
         [HttpPut("{orderId}")]
         public async Task<IActionResult> UpdateOrder(int orderId, UpdateOrderDto dto)
         {

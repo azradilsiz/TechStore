@@ -6,9 +6,41 @@
     </div>
   </div>
 
-  <div class="checkout-layout">
-    <form class="checkout-form" (ngSubmit)="completeCheckout()">
-      <div class="form-section">
+  <div class="checkout-choice" *ngIf="!canShowCheckoutForm">
+    <h3>Siparişe nasıl devam etmek istersiniz?</h3>
+    <p>Hesabınla giriş yapabilir veya üyelik oluşturmadan misafir olarak sipariş verebilirsin.</p>
+
+    <div class="choice-actions">
+      <button type="button" class="complete-button" (click)="goToLogin()">
+        Giriş Yaparak Devam Et
+      </button>
+      <button type="button" class="secondary-action" (click)="continueAsGuest()">
+        Misafir Olarak Devam Et
+      </button>
+    </div>
+  </div>
+
+  <div class="checkout-layout" *ngIf="canShowCheckoutForm">
+    <div class="order-success-panel" *ngIf="isOrderCreated && createdOrder">
+      <span class="success-kicker">Sipariş alındı</span>
+      <h3>Siparişiniz başarıyla oluşturuldu.</h3>
+      <p>
+        Sipariş numaranız <strong>#{{ createdOrder.id }}</strong>.
+        {{ isGuestMode ? 'Sipariş bilgilerinizi e-posta adresinizle saklayabilirsiniz.' : 'Siparişinizi hesabınızdan takip edebilirsiniz.' }}
+      </p>
+
+      <div class="success-actions">
+        <button type="button" class="complete-button" (click)="goToProducts()">
+          Alışverişe Devam Et
+        </button>
+        <button type="button" class="secondary-action" *ngIf="isAccountMode" routerLink="/orders">
+          Siparişlerime Git
+        </button>
+      </div>
+    </div>
+
+    <form class="checkout-form" *ngIf="!isOrderCreated" (ngSubmit)="completeCheckout()">
+      <div class="form-section" *ngIf="isAccountMode">
         <div class="section-title-row">
           <h3>Teslimat Bilgisi</h3>
           <button class="secondary-action" type="button" (click)="toggleAddressForm()">
@@ -107,6 +139,55 @@
         </div>
       </div>
 
+      <div class="form-section" *ngIf="isGuestMode">
+        <h3>Misafir Teslimat Bilgisi</h3>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="guestFirstName">Ad</label>
+            <input id="guestFirstName" name="guestFirstName" type="text" [(ngModel)]="guestForm.firstName">
+          </div>
+
+          <div class="field-group">
+            <label for="guestLastName">Soyad</label>
+            <input id="guestLastName" name="guestLastName" type="text" [(ngModel)]="guestForm.lastName">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="guestEmail">E-posta</label>
+            <input id="guestEmail" name="guestEmail" type="email" [(ngModel)]="guestForm.email">
+          </div>
+
+          <div class="field-group">
+            <label for="guestPhone">Telefon</label>
+            <input id="guestPhone" name="guestPhone" type="tel" [(ngModel)]="guestForm.phone">
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="guestCity">Şehir</label>
+            <input id="guestCity" name="guestCity" type="text" [(ngModel)]="guestForm.city">
+          </div>
+
+          <div class="field-group">
+            <label for="guestDistrict">İlçe</label>
+            <input id="guestDistrict" name="guestDistrict" type="text" [(ngModel)]="guestForm.district">
+          </div>
+        </div>
+
+        <label for="guestAddressDetail">Adres detayı</label>
+        <textarea
+          id="guestAddressDetail"
+          name="guestAddressDetail"
+          rows="3"
+          placeholder="Mahalle, cadde, apartman ve daire bilgisi"
+          [(ngModel)]="guestForm.addressDetail"
+        ></textarea>
+      </div>
+
       <div class="form-section">
         <h3>Ödeme Yöntemi</h3>
 
@@ -134,32 +215,60 @@
     <aside class="checkout-summary">
       <h3>İşlem Özeti</h3>
 
-      <div class="summary-row">
-        <span>Teslimat adresi</span>
-        <strong>{{ selectedAddress?.title || '-' }}</strong>
-      </div>
+      <ng-container *ngIf="createdOrder; else activeSummary">
+        <div class="summary-row">
+          <span>Sipariş No</span>
+          <strong>#{{ createdOrder.id }}</strong>
+        </div>
 
-      <div class="summary-row">
-        <span>Adres</span>
-        <strong>
-          {{ selectedAddress ? selectedAddress.district + ' / ' + selectedAddress.city : '-' }}
-        </strong>
-      </div>
+        <div class="summary-row">
+          <span>Sipariş Tutarı</span>
+          <strong>{{ createdOrder.totalPrice }} TL</strong>
+        </div>
 
-      <div class="summary-row">
-        <span>Ödeme</span>
-        <strong>{{ getPaymentMethodLabel(paymentMethod) }}</strong>
-      </div>
+        <div class="summary-row">
+          <span>Ödeme</span>
+          <strong>{{ getPaymentMethodLabel(paymentMethod) }}</strong>
+        </div>
 
-      <div class="result-box" *ngIf="createdOrder">
-        <span>Sipariş No</span>
-        <strong>#{{ createdOrder.id }}</strong>
-      </div>
+        <div class="result-box" *ngIf="createdOrder.hasPayment">
+          <span>Ödeme Durumu</span>
+          <strong>Ödeme bilgisi oluşturuldu</strong>
+        </div>
+      </ng-container>
 
-      <div class="result-box" *ngIf="createdOrder?.hasPayment">
-        <span>Ödeme Durumu</span>
-        <strong>Pending</strong>
-      </div>
+      <ng-template #activeSummary>
+        <ng-container *ngIf="isAccountMode">
+          <div class="summary-row">
+            <span>Teslimat adresi</span>
+            <strong>{{ selectedAddress?.title || '-' }}</strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Adres</span>
+            <strong>
+              {{ selectedAddress ? selectedAddress.district + ' / ' + selectedAddress.city : '-' }}
+            </strong>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="isGuestMode">
+          <div class="summary-row">
+            <span>Sepet tutarı</span>
+            <strong>{{ guestCart.totalPrice }} TL</strong>
+          </div>
+
+          <div class="summary-row">
+            <span>Ürün adedi</span>
+            <strong>{{ guestCart.items.length }}</strong>
+          </div>
+        </ng-container>
+
+        <div class="summary-row">
+          <span>Ödeme</span>
+          <strong>{{ getPaymentMethodLabel(paymentMethod) }}</strong>
+        </div>
+      </ng-template>
     </aside>
   </div>
 </section>

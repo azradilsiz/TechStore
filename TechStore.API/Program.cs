@@ -40,11 +40,11 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserTypeService>();
 builder.Services.AddScoped<UserAddressService>();
 builder.Services.AddScoped<OrderService>();

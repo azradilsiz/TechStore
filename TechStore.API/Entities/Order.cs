@@ -4,11 +4,17 @@
     {
 
         public int Id { get; set; }
-        public int UserId { get; set; }
-        public int UserAddressId { get; set; }
+        public int? UserId { get; set; }
+        public int? UserAddressId { get; set; }
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
         public string Status { get; set; } = string.Empty;
+        public string GuestFullName { get; set; } = string.Empty;
+        public string GuestEmail { get; set; } = string.Empty;
+        public string GuestPhone { get; set; } = string.Empty;
+        public string GuestCity { get; set; } = string.Empty;
+        public string GuestDistrict { get; set; } = string.Empty;
+        public string GuestAddressDetail { get; set; } = string.Empty;
         public User? User { get; set; }
 
         public UserAddress? UserAddress { get; set; }

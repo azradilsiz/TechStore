@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, timeout } from 'rxjs';
-import { CreateOrderFromCart, Order } from '../../models/order.model';
+import { CreateGuestOrder, CreateOrderFromCart, Order } from '../../models/order.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,12 @@ export class OrderService {
 
   createOrderFromCart(userId: number, dto: CreateOrderFromCart): Observable<Order> {
     return this.http.post<Order>(`${this.apiUrl}/user/${userId}/from-cart`, dto).pipe(
+      timeout(10000)
+    );
+  }
+
+  createGuestOrder(dto: CreateGuestOrder): Observable<Order> {
+    return this.http.post<Order>(`${this.apiUrl}/guest`, dto).pipe(
       timeout(10000)
     );
   }

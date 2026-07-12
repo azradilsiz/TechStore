@@ -1,4 +1,4 @@
-<header class="app-header">
+<header class="app-header" *ngIf="!isAuthPage">
   <a class="brand" routerLink="/">
     <span class="brand-mark">
       TS
@@ -9,7 +9,7 @@
     </div>
   </a>
 
-  <form class="header-search" (ngSubmit)="searchProducts()">
+  <form class="header-search" *ngIf="!isAuthPage" (ngSubmit)="searchProducts()">
     <input
       type="search"
       name="searchTerm"
@@ -20,12 +20,30 @@
     <button type="submit">Ara</button>
   </form>
 
-  <nav class="main-nav">
+  <nav class="main-nav" *ngIf="!isAuthPage">
     <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">Ana Sayfa</a>
     <button class="menu-trigger" type="button" (click)="toggleCategoryMenu()">Kategoriler</button>
     <a routerLink="/products" routerLinkActive="active-link">Ürünler</a>
     <a routerLink="/cart" routerLinkActive="active-link">Sepet</a>
-    <a routerLink="/orders" routerLinkActive="active-link">Siparişlerim</a>
+    <a routerLink="/orders" routerLinkActive="active-link" *ngIf="currentUser">Siparişlerim</a>
+
+    <a class="account-button login-account" *ngIf="!currentUser" routerLink="/login" routerLinkActive="active-link" aria-label="Giriş yap">
+      <span class="account-symbol" aria-hidden="true"></span>
+      <span>Giriş Yap</span>
+    </a>
+
+    <div class="account-menu" *ngIf="currentUser">
+      <button class="account-button" type="button" aria-label="Hesap menüsü">
+        <span class="profile-avatar">{{ getUserInitials() }}</span>
+      </button>
+
+      <div class="account-dropdown">
+        <strong>{{ currentUser.fullName || currentUser.userName }}</strong>
+        <span>{{ currentUser.email }}</span>
+        <a routerLink="/orders">Siparişlerim</a>
+        <button type="button" (click)="logout()">Çıkış Yap</button>
+      </div>
+    </div>
   </nav>
 </header>
 
@@ -34,7 +52,7 @@
 <aside class="category-menu" *ngIf="isCategoryMenuOpen">
   <div class="category-menu-header">
     <h2>Kategoriler</h2>
-    <button type="button" (click)="closeCategoryMenu()" aria-label="Kategorileri kapat">×</button>
+    <button type="button" (click)="closeCategoryMenu()" aria-label="Kategorileri kapat">x</button>
   </div>
 
   <div class="category-menu-content">

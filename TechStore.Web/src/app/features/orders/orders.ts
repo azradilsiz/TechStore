@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 import { OrderService } from '../../core/services/order.service';
 import { Order } from '../../models/order.model';
 
@@ -14,19 +16,31 @@ export class OrdersComponent implements OnInit {
 
   isLoading = false;
   errorMessage = '';
-
-  currentUserId = 2;
+  currentUserId: number | null = null;
 
   constructor(
+    private authService: AuthService,
     private orderService: OrderService,
+    private router: Router,
     private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.currentUserId = this.authService.getCurrentUserId();
+
+    if (!this.currentUserId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.getOrders();
   }
 
   getOrders(): void {
+    if (!this.currentUserId) {
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
 

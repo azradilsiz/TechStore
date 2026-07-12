@@ -1,0 +1,42 @@
+<section class="auth-page">
+  <div class="auth-panel">
+    <div class="auth-copy">
+      <span class="eyebrow">TechStore hesabı</span>
+      <h2>Giriş yap</h2>
+      <p>Sepetini, adreslerini ve siparişlerini kendi hesabınla yönet.</p>
+    </div>
+
+    <form class="auth-form" (ngSubmit)="login()">
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="loginDto.email"
+          placeholder="ornek@mail.com"
+        >
+      </label>
+
+      <label>
+        Şifre
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="loginDto.password"
+          placeholder="Şifreni gir"
+        >
+      </label>
+
+      <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
+      </button>
+
+      <p class="auth-link">
+        Hesabın yok mu?
+        <a routerLink="/register" [queryParams]="{ returnUrl: returnUrl }">Kayıt ol</a>
+      </p>
+    </form>
+  </div>
+</section>

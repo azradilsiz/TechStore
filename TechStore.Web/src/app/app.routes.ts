@@ -5,6 +5,8 @@ import { HomeComponent } from './features/home/home';
 import { OrdersComponent } from './features/orders/orders';
 import { ProductDetailComponent } from './features/product-detail/product-detail';
 import { ProductsComponent } from './features/products/products';
+import { LoginComponent } from './features/login/login';
+import { RegisterComponent } from './features/register/register';
 
 export const routes: Routes = [
   {
@@ -30,5 +32,13 @@ export const routes: Routes = [
   {
     path: 'orders',
     component: OrdersComponent
-  }
+  },
+  {
+    path: 'login',
+    component: LoginComponent
+  },
+  {
+    path: 'register',
+    component: RegisterComponent
+  },
 ];

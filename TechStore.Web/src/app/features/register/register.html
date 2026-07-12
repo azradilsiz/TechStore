@@ -1,0 +1,74 @@
+<section class="auth-page">
+  <div class="auth-panel">
+    <div class="auth-copy">
+      <span class="eyebrow">Yeni hesap</span>
+      <h2>Kayıt ol</h2>
+      <p>TechStore hesabı oluşturarak sepetini, adreslerini ve siparişlerini tek yerden yönet.</p>
+    </div>
+
+    <form class="auth-form" (ngSubmit)="register()">
+      <div class="form-grid">
+        <label>
+          Ad
+          <input
+            type="text"
+            name="firstName"
+            [(ngModel)]="registerDto.firstName"
+            placeholder="Adını gir"
+          >
+        </label>
+
+        <label>
+          Soyad
+          <input
+            type="text"
+            name="lastName"
+            [(ngModel)]="registerDto.lastName"
+            placeholder="Soyadını gir"
+          >
+        </label>
+      </div>
+
+      <label>
+        Kullanıcı adı
+        <input
+          type="text"
+          name="userName"
+          [(ngModel)]="registerDto.userName"
+          placeholder="Kullanıcı adını gir"
+        >
+      </label>
+
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="registerDto.email"
+          placeholder="ornek@mail.com"
+        >
+      </label>
+
+      <label>
+        Şifre
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="registerDto.password"
+          placeholder="Şifre oluştur"
+        >
+      </label>
+
+      <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Kayıt oluşturuluyor...' : 'Kayıt Ol' }}
+      </button>
+
+      <p class="auth-link">
+        Zaten hesabın var mı?
+        <a routerLink="/login" [queryParams]="{ returnUrl: returnUrl }">Giriş yap</a>
+      </p>
+    </form>
+  </div>
+</section>

@@ -4,13 +4,21 @@ namespace TechStore.API.DTOs.Orders
     {
         public int Id { get; set; }
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
         public string UserName { get; set; } = string.Empty;
 
-        public int UserAddressId { get; set; }
+        public int? UserAddressId { get; set; }
 
         public string AddressTitle { get; set; } = string.Empty;
+
+        public string GuestFullName { get; set; } = string.Empty;
+
+        public string GuestEmail { get; set; } = string.Empty;
+
+        public string GuestPhone { get; set; } = string.Empty;
+
+        public string GuestAddress { get; set; } = string.Empty;
 
         public decimal TotalPrice { get; set; }
 

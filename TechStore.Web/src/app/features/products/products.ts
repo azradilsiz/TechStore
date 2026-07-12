@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
+import { LocalCartService } from '../../core/services/local-cart.service';
 import { ProductService } from '../../core/services/product.service';
 import { Product } from '../../models/product.model';
 
@@ -23,11 +25,11 @@ export class ProductsComponent implements OnInit {
   searchTerm = '';
 
   readonly allCategoryLabel = 'Tüm Ürünler';
-  currentUserId = 2;
-
   constructor(
+    private authService: AuthService,
     private productService: ProductService,
     private cartService: CartService,
+    private localCartService: LocalCartService,
     private route: ActivatedRoute,
     private changeDetector: ChangeDetectorRef
   ) {}
@@ -133,8 +135,17 @@ export class ProductsComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
+    const currentUserId = this.authService.getCurrentUserId();
+
+    if (!currentUserId) {
+      this.localCartService.addItem(product);
+      this.successMessage = `${product.name} sepete eklendi.`;
+      this.changeDetector.detectChanges();
+      return;
+    }
+
     this.cartService.addItemToCart({
-      userId: this.currentUserId,
+      userId: currentUserId,
       productId: product.id,
       quantity: 1
     }).subscribe({
