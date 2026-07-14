@@ -19,3 +19,9 @@ export interface AuthResponseDto {
     email: string;
     fullName: string;
 }
+
+export interface ChangePasswordDto {
+    userId: number;
+    currentPassword: string;
+    newPassword: string;
+}

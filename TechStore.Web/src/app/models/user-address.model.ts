@@ -16,3 +16,11 @@ export interface CreateUserAddress {
   phone: string;
   title: string;
 }
+
+export interface UpdateUserAddress {
+  city: string;
+  district: string;
+  addressDetail: string;
+  phone: string;
+  title: string;
+}

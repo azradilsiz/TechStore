@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.API.DTOs.UserAddresses;
+using TechStore.API.Helpers;
 using TechStore.API.Services;
 
 namespace TechStore.API.Controllers
@@ -67,6 +68,11 @@ namespace TechStore.API.Controllers
                 return BadRequest("Address detail cannot be empty.");
             }
 
+            if (!InputValidationHelper.IsPhoneValid(dto.Phone))
+            {
+                return BadRequest("Phone number must be 10 digits or 11 digits starting with 0.");
+            }
+
             UserAddressDto address = await _userAddressService.CreateUserAddressAsync(dto);
 
             return CreatedAtAction(nameof(GetUserAddressById), new { userAddressId = address.Id }, address);
@@ -88,6 +94,11 @@ namespace TechStore.API.Controllers
             if (string.IsNullOrWhiteSpace(dto.AddressDetail))
             {
                 return BadRequest("Address detail cannot be empty.");
+            }
+
+            if (!InputValidationHelper.IsPhoneValid(dto.Phone))
+            {
+                return BadRequest("Phone number must be 10 digits or 11 digits starting with 0.");
             }
 
             bool result = await _userAddressService.UpdateUserAddressAsync(userAddressId, dto);

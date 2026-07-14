@@ -50,7 +50,8 @@ export class App {
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
         this.isAuthPage = event.urlAfterRedirects.startsWith('/login') ||
-          event.urlAfterRedirects.startsWith('/register');
+          event.urlAfterRedirects.startsWith('/register') ||
+          event.urlAfterRedirects.startsWith('/forgot-password');
       });
   }
 

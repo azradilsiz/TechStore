@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TechStore.API.DTOs.Auth;
+using TechStore.API.Helpers;
 using TechStore.API.Services;
 
 namespace TechStore.API.Controllers
@@ -21,6 +22,11 @@ namespace TechStore.API.Controllers
             if (string.IsNullOrWhiteSpace(dto.Email))
             {
                 return BadRequest("Email cannot be empty.");
+            }
+
+            if (!InputValidationHelper.IsEmailValid(dto.Email))
+            {
+                return BadRequest("Email format is invalid.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.Password))
@@ -51,6 +57,11 @@ namespace TechStore.API.Controllers
                 return BadRequest("Password cannot be empty.");
             }
 
+            if (dto.Password.Trim().Length < 6)
+            {
+                return BadRequest("Password must be at least 6 characters.");
+            }
+
             if (string.IsNullOrWhiteSpace(dto.FirstName))
             {
                 return BadRequest("First name cannot be empty.");
@@ -66,6 +77,11 @@ namespace TechStore.API.Controllers
                 return BadRequest("Email cannot be empty.");
             }
 
+            if (!InputValidationHelper.IsEmailValid(dto.Email))
+            {
+                return BadRequest("Email format is invalid.");
+            }
+
             AuthResponseDto? result = await _authService.RegisterAsync(dto);
 
             if (result == null)
@@ -74,6 +90,39 @@ namespace TechStore.API.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+        {
+            if (dto.UserId <= 0)
+            {
+                return BadRequest("UserId must be greater than zero.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+            {
+                return BadRequest("Current password cannot be empty.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.NewPassword))
+            {
+                return BadRequest("New password cannot be empty.");
+            }
+
+            if (dto.NewPassword.Trim().Length < 6)
+            {
+                return BadRequest("New password must be at least 6 characters.");
+            }
+
+            bool result = await _authService.ChangePasswordAsync(dto);
+
+            if (!result)
+            {
+                return BadRequest("Current password is incorrect.");
+            }
+
+            return NoContent();
         }
     }
 }

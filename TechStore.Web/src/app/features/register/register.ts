@@ -42,6 +42,16 @@ export class RegisterComponent {
       return;
     }
 
+    if (!this.isEmailValid(this.registerDto.email)) {
+      this.errorMessage = 'Geçerli bir email adresi girmelisin.';
+      return;
+    }
+
+    if (this.registerDto.password.trim().length < 6) {
+      this.errorMessage = 'Şifre en az 6 karakter olmalı.';
+      return;
+    }
+
     this.isLoading = true;
 
     this.authService.register(this.registerDto).subscribe({
@@ -65,5 +75,9 @@ export class RegisterComponent {
       this.registerDto.lastName.trim() &&
       this.registerDto.email.trim()
     );
+  }
+
+  private isEmailValid(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   }
 }

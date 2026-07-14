@@ -35,7 +35,12 @@ export class LoginComponent {
     this.errorMessage = '';
 
     if (!this.loginDto.email.trim() || !this.loginDto.password.trim()) {
-      this.errorMessage = 'Email ve şifre alanlarını doldurmalısın.';
+      this.errorMessage = 'E-posta ve şifre alanlarını doldurmalısın.';
+      return;
+    }
+
+    if (!this.isEmailValid(this.loginDto.email)) {
+      this.errorMessage = 'Geçerli bir email adresi girmelisin.';
       return;
     }
 
@@ -54,9 +59,13 @@ export class LoginComponent {
       },
       error: () => {
         this.isLoading = false;
-        this.errorMessage = 'Email veya şifre hatalı.';
+        this.errorMessage = 'E-posta veya şifre hatalı.';
         this.changeDetector.detectChanges();
       }
     });
+  }
+
+  private isEmailValid(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   }
 }

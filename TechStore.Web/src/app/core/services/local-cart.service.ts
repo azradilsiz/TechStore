@@ -25,7 +25,7 @@ export class LocalCartService {
 
     if (existingItem) {
       existingItem.quantity += quantity;
-      existingItem.totalPrice = existingItem.quantity * existingItem.unitPrice;
+      existingItem.totalPrice = this.roundPrice(existingItem.quantity * existingItem.unitPrice);
     } else {
       items.push({
         id: product.id,
@@ -33,7 +33,7 @@ export class LocalCartService {
         productName: product.name,
         quantity,
         unitPrice: product.price,
-        totalPrice: product.price * quantity
+        totalPrice: this.roundPrice(product.price * quantity)
       });
     }
 
@@ -48,7 +48,7 @@ export class LocalCartService {
         ? {
             ...item,
             quantity,
-            totalPrice: item.unitPrice * quantity
+            totalPrice: this.roundPrice(item.unitPrice * quantity)
           }
         : item);
 
@@ -89,6 +89,10 @@ export class LocalCartService {
   }
 
   private calculateTotalPrice(items: CartItem[]): number {
-    return items.reduce((total, item) => total + item.totalPrice, 0);
+    return this.roundPrice(items.reduce((total, item) => total + item.totalPrice, 0));
+  }
+
+  private roundPrice(price: number): number {
+    return Math.round(price * 100) / 100;
   }
 }

@@ -101,4 +101,8 @@ export class CartComponent implements OnInit {
       }
     });
   }
+
+  formatPrice(price: number): string {
+    return price.toFixed(2);
+  }
 }

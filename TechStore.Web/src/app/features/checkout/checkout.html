@@ -111,6 +111,9 @@
             name="phone"
             type="tel"
             placeholder="Telefon numaranızı girin"
+            inputmode="numeric"
+            maxlength="16"
+            pattern="(?:5[0-9]{9}|05[0-9]{9}|0\s*5[0-9\s]{9,})"
             [(ngModel)]="newAddress.phone"
             [ngModelOptions]="{ standalone: true }"
           >
@@ -145,36 +148,51 @@
         <div class="form-grid">
           <div class="field-group">
             <label for="guestFirstName">Ad</label>
-            <input id="guestFirstName" name="guestFirstName" type="text" [(ngModel)]="guestForm.firstName">
+            <input id="guestFirstName" name="guestFirstName" type="text" maxlength="50" [(ngModel)]="guestForm.firstName">
           </div>
 
           <div class="field-group">
             <label for="guestLastName">Soyad</label>
-            <input id="guestLastName" name="guestLastName" type="text" [(ngModel)]="guestForm.lastName">
+            <input id="guestLastName" name="guestLastName" type="text" maxlength="50" [(ngModel)]="guestForm.lastName">
           </div>
         </div>
 
         <div class="form-grid">
           <div class="field-group">
             <label for="guestEmail">E-posta</label>
-            <input id="guestEmail" name="guestEmail" type="email" [(ngModel)]="guestForm.email">
+            <input
+              id="guestEmail"
+              name="guestEmail"
+              type="email"
+              maxlength="100"
+              placeholder="E-posta adresinizi girin"
+              [(ngModel)]="guestForm.email"
+            >
           </div>
 
           <div class="field-group">
             <label for="guestPhone">Telefon</label>
-            <input id="guestPhone" name="guestPhone" type="tel" [(ngModel)]="guestForm.phone">
+            <input
+              id="guestPhone"
+              name="guestPhone"
+              type="tel"
+              inputmode="numeric"
+              maxlength="16"
+              pattern="(?:5[0-9]{9}|05[0-9]{9}|0\s*5[0-9\s]{9,})"
+              [(ngModel)]="guestForm.phone"
+            >
           </div>
         </div>
 
         <div class="form-grid">
           <div class="field-group">
             <label for="guestCity">Şehir</label>
-            <input id="guestCity" name="guestCity" type="text" [(ngModel)]="guestForm.city">
+            <input id="guestCity" name="guestCity" type="text" maxlength="50" [(ngModel)]="guestForm.city">
           </div>
 
           <div class="field-group">
             <label for="guestDistrict">İlçe</label>
-            <input id="guestDistrict" name="guestDistrict" type="text" [(ngModel)]="guestForm.district">
+            <input id="guestDistrict" name="guestDistrict" type="text" maxlength="50" [(ngModel)]="guestForm.district">
           </div>
         </div>
 
@@ -184,6 +202,7 @@
           name="guestAddressDetail"
           rows="3"
           placeholder="Mahalle, cadde, apartman ve daire bilgisi"
+          maxlength="250"
           [(ngModel)]="guestForm.addressDetail"
         ></textarea>
       </div>

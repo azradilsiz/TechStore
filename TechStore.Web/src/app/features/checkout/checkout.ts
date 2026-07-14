@@ -165,7 +165,7 @@ export class CheckoutComponent implements OnInit {
     }
 
     if (!this.isAddressFormValid()) {
-      this.addressErrorMessage = 'Adres başlığı, şehir, ilçe ve adres detayı alanlarını doldurmalısın.';
+      this.addressErrorMessage = 'Adres başlığı, şehir, ilçe, adres detayı ve geçerli telefon alanlarını doldurmalısın.';
       return;
     }
 
@@ -173,7 +173,8 @@ export class CheckoutComponent implements OnInit {
 
     this.userAddressService.createUserAddress({
       ...this.newAddress,
-      userId: this.currentUserId
+      userId: this.currentUserId,
+      phone: this.normalizePhone(this.newAddress.phone)
     }).subscribe({
       next: (address) => {
         this.addresses = [...this.addresses, address];
@@ -248,7 +249,7 @@ export class CheckoutComponent implements OnInit {
     }
 
     if (!this.isGuestFormValid()) {
-      this.errorMessage = 'Misafir sipariş için ad, soyad, e-posta, telefon ve adres bilgilerini doldurmalısın.';
+      this.errorMessage = 'Misafir sipariş için ad, soyad, geçerli e-posta, geçerli telefon ve adres bilgilerini doldurmalısın.';
       return;
     }
 
@@ -259,6 +260,7 @@ export class CheckoutComponent implements OnInit {
 
     this.orderService.createGuestOrder({
       ...this.guestForm,
+      phone: this.normalizePhone(this.guestForm.phone),
       paymentMethod: this.paymentMethod,
       items: this.guestCart.items.map((item) => ({
         productId: item.productId,
@@ -308,7 +310,8 @@ export class CheckoutComponent implements OnInit {
       this.newAddress.title.trim() &&
       this.newAddress.city.trim() &&
       this.newAddress.district.trim() &&
-      this.newAddress.addressDetail.trim()
+      this.newAddress.addressDetail.trim() &&
+      this.isPhoneValid(this.newAddress.phone)
     );
   }
 
@@ -316,11 +319,23 @@ export class CheckoutComponent implements OnInit {
     return Boolean(
       this.guestForm.firstName.trim() &&
       this.guestForm.lastName.trim() &&
-      this.guestForm.email.trim() &&
-      this.guestForm.phone.trim() &&
+      this.isEmailValid(this.guestForm.email) &&
+      this.isPhoneValid(this.guestForm.phone) &&
       this.guestForm.city.trim() &&
       this.guestForm.district.trim() &&
       this.guestForm.addressDetail.trim()
     );
+  }
+
+  private isEmailValid(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  }
+
+  private isPhoneValid(phone: string): boolean {
+    return /^(?:5\d{9}|05\d{9})$/.test(this.normalizePhone(phone));
+  }
+
+  private normalizePhone(phone: string): string {
+    return phone.replace(/\s+/g, '');
   }
 }

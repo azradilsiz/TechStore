@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TechStore.API.DTOs.Orders;
+using TechStore.API.Helpers;
 using TechStore.API.Services;
 
 namespace TechStore.API.Controllers
@@ -128,9 +129,19 @@ namespace TechStore.API.Controllers
                 return BadRequest("Email cannot be empty.");
             }
 
+            if (!InputValidationHelper.IsEmailValid(dto.Email))
+            {
+                return BadRequest("Email format is invalid.");
+            }
+
             if (string.IsNullOrWhiteSpace(dto.Phone))
             {
                 return BadRequest("Phone cannot be empty.");
+            }
+
+            if (!InputValidationHelper.IsPhoneValid(dto.Phone))
+            {
+                return BadRequest("Phone number must be 10 digits or 11 digits starting with 0.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.City))

@@ -8,12 +8,13 @@
 
     <form class="auth-form" (ngSubmit)="login()">
       <label>
-        Email
+        E-posta
         <input
           type="email"
           name="email"
+          maxlength="100"
           [(ngModel)]="loginDto.email"
-          placeholder="ornek@mail.com"
+          placeholder="E-posta adresinizi girin"
         >
       </label>
 
@@ -22,10 +23,14 @@
         <input
           type="password"
           name="password"
+          minlength="6"
+          maxlength="100"
           [(ngModel)]="loginDto.password"
-          placeholder="Şifreni gir"
+          placeholder="Şifrenizi girin"
         >
       </label>
+
+      <a class="forgot-password-link" routerLink="/forgot-password">Şifremi unuttum</a>
 
       <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
 

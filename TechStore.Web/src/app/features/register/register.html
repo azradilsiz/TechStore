@@ -13,8 +13,9 @@
           <input
             type="text"
             name="firstName"
+            maxlength="50"
             [(ngModel)]="registerDto.firstName"
-            placeholder="Adını gir"
+            placeholder="Adınızı girin"
           >
         </label>
 
@@ -23,8 +24,9 @@
           <input
             type="text"
             name="lastName"
+            maxlength="50"
             [(ngModel)]="registerDto.lastName"
-            placeholder="Soyadını gir"
+            placeholder="Soyadınızı girin"
           >
         </label>
       </div>
@@ -34,18 +36,20 @@
         <input
           type="text"
           name="userName"
+          maxlength="50"
           [(ngModel)]="registerDto.userName"
-          placeholder="Kullanıcı adını gir"
+          placeholder="Kullanıcı adınızı girin"
         >
       </label>
 
       <label>
-        Email
+        E-posta
         <input
           type="email"
           name="email"
+          maxlength="100"
           [(ngModel)]="registerDto.email"
-          placeholder="ornek@mail.com"
+          placeholder="E-posta adresinizi girin"
         >
       </label>
 
@@ -54,8 +58,10 @@
         <input
           type="password"
           name="password"
+          minlength="6"
+          maxlength="100"
           [(ngModel)]="registerDto.password"
-          placeholder="Şifre oluştur"
+          placeholder="Şifre oluşturun"
         >
       </label>
 

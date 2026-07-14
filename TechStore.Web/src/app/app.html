@@ -40,6 +40,7 @@
       <div class="account-dropdown">
         <strong>{{ currentUser.fullName || currentUser.userName }}</strong>
         <span>{{ currentUser.email }}</span>
+        <a routerLink="/profile">Profilim</a>
         <a routerLink="/orders">Siparişlerim</a>
         <button type="button" (click)="logout()">Çıkış Yap</button>
       </div>

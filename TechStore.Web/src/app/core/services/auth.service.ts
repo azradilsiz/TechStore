@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, forkJoin, map, Observable, of, switchMap, tap, timeout } from 'rxjs';
-import { AuthResponseDto, LoginDto, RegisterDto } from '../../models/auth.model';
+import { AuthResponseDto, ChangePasswordDto, LoginDto, RegisterDto } from '../../models/auth.model';
 import { CartService } from './cart.service';
 import { LocalCartService } from './local-cart.service';
 
@@ -34,6 +34,12 @@ export class AuthService {
       timeout(10000),
       tap((user) => this.setCurrentUser(user)),
       switchMap((user) => this.mergeGuestCartToUserCart(user))
+    );
+  }
+
+  changePassword(dto: ChangePasswordDto): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/change-password`, dto).pipe(
+      timeout(10000)
     );
   }
 

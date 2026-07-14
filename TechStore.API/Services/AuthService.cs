@@ -66,6 +66,29 @@ namespace TechStore.API.Services
             return MapUserToAuthResponse(user);
         }
 
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto dto)
+        {
+            User? user = await _userRepository.GetByIdAsync(dto.UserId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            PasswordVerificationResult passwordResult =
+                _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.CurrentPassword);
+
+            if (passwordResult == PasswordVerificationResult.Failed)
+            {
+                return false;
+            }
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
+            await _userRepository.SaveChangesAsync();
+
+            return true;
+        }
+
         private static AuthResponseDto MapUserToAuthResponse(User user)
         {
             return new AuthResponseDto

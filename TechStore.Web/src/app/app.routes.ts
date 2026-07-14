@@ -5,7 +5,9 @@ import { HomeComponent } from './features/home/home';
 import { OrdersComponent } from './features/orders/orders';
 import { ProductDetailComponent } from './features/product-detail/product-detail';
 import { ProductsComponent } from './features/products/products';
+import { ForgotPasswordComponent } from './features/forgot-password/forgot-password';
 import { LoginComponent } from './features/login/login';
+import { ProfileComponent } from './features/profile/profile';
 import { RegisterComponent } from './features/register/register';
 
 export const routes: Routes = [
@@ -34,8 +36,16 @@ export const routes: Routes = [
     component: OrdersComponent
   },
   {
+    path: 'profile',
+    component: ProfileComponent
+  },
+  {
     path: 'login',
     component: LoginComponent
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent
   },
   {
     path: 'register',

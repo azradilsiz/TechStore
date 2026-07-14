@@ -1,0 +1,198 @@
+<section class="profile-page" *ngIf="currentUser">
+  <div class="page-header">
+    <div>
+      <span class="eyebrow">Hesabım</span>
+      <h2>Profilim</h2>
+      <p>Hesap bilgilerini, teslimat adreslerini ve güvenlik seçeneklerini buradan yönetebilirsin.</p>
+    </div>
+  </div>
+
+  <div class="profile-layout">
+    <aside class="profile-sidebar">
+      <section class="profile-card account-summary">
+        <div class="profile-initials">{{ fullName.charAt(0).toUpperCase() }}</div>
+        <h3>{{ fullName }}</h3>
+        <p>{{ currentUser.email }}</p>
+      </section>
+
+      <section class="profile-card">
+        <h3>Hesap Bilgilerim</h3>
+
+        <div class="info-list">
+          <div>
+            <span>Ad Soyad</span>
+            <strong>{{ fullName }}</strong>
+          </div>
+
+          <div>
+            <span>Kullanıcı adı</span>
+            <strong>{{ currentUser.userName }}</strong>
+          </div>
+
+          <div>
+            <span>E-posta</span>
+            <strong>{{ currentUser.email }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="profile-card password-card">
+        <h3>Şifre İşlemleri</h3>
+        <p>Hesabının güvenliği için yeni şifreni mevcut şifrenle doğrulayarak değiştirebilirsin.</p>
+
+        <form class="password-form" (ngSubmit)="changePassword()">
+          <label>
+            Mevcut şifre
+            <input
+              type="password"
+              name="currentPassword"
+              minlength="6"
+              maxlength="100"
+              [(ngModel)]="passwordForm.currentPassword"
+              placeholder="Mevcut şifrenizi girin"
+            >
+          </label>
+
+          <label>
+            Yeni şifre
+            <input
+              type="password"
+              name="newPassword"
+              minlength="6"
+              maxlength="100"
+              [(ngModel)]="passwordForm.newPassword"
+              placeholder="Yeni şifrenizi girin"
+            >
+          </label>
+
+          <label>
+            Yeni şifre tekrar
+            <input
+              type="password"
+              name="confirmPassword"
+              minlength="6"
+              maxlength="100"
+              [(ngModel)]="passwordForm.confirmPassword"
+              placeholder="Yeni şifrenizi tekrar girin"
+            >
+          </label>
+
+          <div class="state-box error-message" *ngIf="passwordErrorMessage">
+            {{ passwordErrorMessage }}
+          </div>
+
+          <div class="state-box success-message" *ngIf="passwordSuccessMessage">
+            {{ passwordSuccessMessage }}
+          </div>
+
+          <button type="submit" [disabled]="isPasswordSaving">
+            {{ isPasswordSaving ? 'Şifre güncelleniyor...' : 'Şifre Değiştir' }}
+          </button>
+        </form>
+      </section>
+    </aside>
+
+    <section class="profile-card addresses-panel">
+      <div class="section-title-row">
+        <div>
+          <h3>Adreslerim</h3>
+          <p>Teslimatta kullanacağın adresleri buradan ekleyebilir, düzenleyebilir veya silebilirsin.</p>
+        </div>
+
+        <button class="secondary-action" type="button" (click)="toggleAddressForm()">
+          {{ isAddressFormVisible ? 'Vazgeç' : 'Yeni Adres Ekle' }}
+        </button>
+      </div>
+
+      <div class="state-box error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="state-box success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <form class="address-form" *ngIf="isAddressFormVisible" (ngSubmit)="saveAddress()">
+        <h4>{{ addressFormTitle }}</h4>
+
+        <label for="profileAddressTitle">Adres başlığı</label>
+        <input
+          id="profileAddressTitle"
+          name="profileAddressTitle"
+          type="text"
+          maxlength="50"
+          placeholder="Ev, iş..."
+          [(ngModel)]="newAddress.title"
+        >
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="profileCity">Şehir</label>
+            <input id="profileCity" name="profileCity" type="text" maxlength="50" placeholder="Şehir girin" [(ngModel)]="newAddress.city">
+          </div>
+
+          <div class="field-group">
+            <label for="profileDistrict">İlçe</label>
+            <input id="profileDistrict" name="profileDistrict" type="text" maxlength="50" placeholder="İlçe girin" [(ngModel)]="newAddress.district">
+          </div>
+        </div>
+
+        <label for="profileAddressDetail">Adres detayı</label>
+        <textarea
+          id="profileAddressDetail"
+          name="profileAddressDetail"
+          rows="3"
+          maxlength="250"
+          placeholder="Mahalle, cadde, apartman ve daire bilgisi"
+          [(ngModel)]="newAddress.addressDetail"
+        ></textarea>
+
+        <label for="profilePhone">Telefon</label>
+        <input
+          id="profilePhone"
+          name="profilePhone"
+          type="tel"
+          inputmode="tel"
+          maxlength="16"
+          placeholder="0545 444 44 44"
+          pattern="(?:5[0-9]{9}|05[0-9]{9}|0\s*5[0-9\s]{9,})"
+          [(ngModel)]="newAddress.phone"
+        >
+
+        <div class="form-actions">
+          <button class="save-address-button" type="submit" [disabled]="isAddressSaving">
+            {{ addressSaveButtonText }}
+          </button>
+
+          <button class="secondary-action" type="button" (click)="cancelAddressForm()">
+            İptal
+          </button>
+        </div>
+      </form>
+
+      <div class="state-box" *ngIf="isAddressLoading">
+        Adresler yükleniyor...
+      </div>
+
+      <div class="state-box" *ngIf="!isAddressLoading && addresses.length === 0 && !isAddressFormVisible">
+        Kayıtlı adresin bulunmuyor. Checkout sırasında veya bu sayfadan yeni adres ekleyebilirsin.
+      </div>
+
+      <div class="address-list" *ngIf="addresses.length > 0">
+        <article class="address-card" *ngFor="let address of addresses">
+          <div class="address-content">
+            <strong>{{ address.title || 'Teslimat Adresi' }}</strong>
+            <span>{{ address.addressDetail }}</span>
+            <span>{{ address.district }} / {{ address.city }}</span>
+            <span>{{ address.phone }}</span>
+          </div>
+
+          <div class="address-actions">
+            <button type="button" (click)="editAddress(address)">Düzenle</button>
+            <button class="danger-action" type="button" (click)="deleteAddress(address.id)">Sil</button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

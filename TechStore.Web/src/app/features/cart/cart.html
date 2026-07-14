@@ -23,7 +23,7 @@
       <article class="cart-item" *ngFor="let item of cart.items">
         <div class="item-main">
           <h3>{{ item.productName }}</h3>
-          <p>Birim fiyat: {{ item.unitPrice }} TL</p>
+          <p>Birim fiyat: {{ formatPrice(item.unitPrice) }} TL</p>
         </div>
 
         <div class="quantity-control">
@@ -44,7 +44,7 @@
           </button>
         </div>
 
-        <strong class="item-total">{{ item.totalPrice }} TL</strong>
+        <strong class="item-total">{{ formatPrice(item.totalPrice) }} TL</strong>
 
         <button
           type="button"
@@ -60,7 +60,7 @@
 
       <div class="summary-row">
         <span>Ürün tutarı</span>
-        <strong>{{ cart.totalPrice }} TL</strong>
+        <strong>{{ formatPrice(cart.totalPrice) }} TL</strong>
       </div>
 
       <div class="summary-row muted">
@@ -70,7 +70,7 @@
 
       <div class="summary-total">
         <span>Toplam</span>
-        <strong>{{ cart.totalPrice }} TL</strong>
+        <strong>{{ formatPrice(cart.totalPrice) }} TL</strong>
       </div>
 
       <a routerLink="/checkout" class="checkout-button">

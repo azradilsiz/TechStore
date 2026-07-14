@@ -83,6 +83,14 @@
   font-weight: 700;
 }
 
+.success-message {
+  padding: 12px;
+  border-radius: 6px;
+  background: #f0fdf4;
+  color: #047857;
+  font-weight: 700;
+}
+
 .auth-link {
   color: #64748b;
 }
@@ -90,6 +98,13 @@
 .auth-link a {
   color: #0891b2;
   font-weight: 800;
+}
+
+.forgot-password-link {
+  justify-self: start;
+  color: #0891b2;
+  font-weight: 800;
+  text-decoration: underline;
 }
 
 @media (max-width: 760px) {
