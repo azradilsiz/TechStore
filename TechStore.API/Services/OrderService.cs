@@ -228,6 +228,7 @@ namespace TechStore.API.Services
                 UserName = order.User != null
                     ? $"{order.User.FirstName} {order.User.LastName}".Trim()
                     : string.Empty,
+                UserEmail = order.User?.Email ?? string.Empty,
                 UserAddressId = order.UserAddressId,
                 AddressTitle = order.UserAddress != null
                     ? order.UserAddress.Title

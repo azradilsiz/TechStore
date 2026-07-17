@@ -34,4 +34,12 @@ export class OrderService {
       timeout(10000)
     );
   }
+
+  getOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(this.apiUrl).pipe(timeout(10000));
+  }
+
+  updateOrderStatus(orderId: number, status: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${orderId}`, { status }).pipe(timeout(10000));
+  }
 }

@@ -7,8 +7,15 @@
     </div>
   </div>
 
+  <div class="stats-grid" *ngIf="!loading">
+    <div class="stat-card"><small>Toplam ürün</small><strong>{{ productCount }}</strong></div>
+    <div class="stat-card"><small>Kullanıcı</small><strong>{{ userCount }}</strong></div>
+    <div class="stat-card"><small>Bekleyen sipariş</small><strong>{{ pendingOrderCount }}</strong></div>
+    <div class="stat-card"><small>Kritik stok</small><strong>{{ lowStockCount }}</strong></div>
+  </div>
+
   <div class="management-grid">
-    <a class="management-card" routerLink="/admin/admin-products">
+    <a class="management-card" routerLink="/admin/products">
       <span class="card-icon">Ü</span>
       <span>
         <strong>Ürün yönetimi</strong>
@@ -17,7 +24,7 @@
       <span class="card-arrow">→</span>
     </a>
 
-    <a class="management-card" routerLink="/admin/admin-orders">
+    <a class="management-card" routerLink="/admin/orders">
       <span class="card-icon">S</span>
       <span>
         <strong>Sipariş yönetimi</strong>
@@ -26,7 +33,7 @@
       <span class="card-arrow">→</span>
     </a>
 
-    <a class="management-card" routerLink="/admin/admin-users">
+    <a class="management-card" routerLink="/admin/users">
       <span class="card-icon">K</span>
       <span>
         <strong>Kullanıcı yönetimi</strong>
@@ -36,8 +43,8 @@
     </a>
   </div>
 
-  <div class="dashboard-note">
-    <strong>Sonraki adım</strong>
-    <p>Bu ekranın bağlantıları hazırlandı. Yönetim işlemleri ilgili sayfalara backend endpointleri bağlandıkça aktif hale getirilecek.</p>
+  <div class="recent-orders" *ngIf="recentOrders.length">
+    <div class="section-title"><strong>Son siparişler</strong><a routerLink="/admin/orders">Tümünü gör</a></div>
+    <div class="recent-row" *ngFor="let order of recentOrders"><span>#{{ order.id }} · {{ order.userName || order.guestFullName || 'Misafir' }}</span><strong>{{ order.totalPrice | currency:'TRY':'symbol-narrow':'1.2-2':'tr-TR' }}</strong><small>{{ statusLabel(order.status) }}</small></div>
   </div>
 </section>

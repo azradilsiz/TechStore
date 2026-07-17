@@ -1,4 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using TechStore.API.DTOs.Auth;
 using TechStore.API.Entities;
 using TechStore.API.Repositories.Interfaces;
@@ -11,13 +15,16 @@ namespace TechStore.API.Services
 
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IConfiguration _configuration;
 
         public AuthService(
             IUserRepository userRepository,
-            IPasswordHasher<User> passwordHasher)
+            IPasswordHasher<User> passwordHasher,
+            IConfiguration configuration)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _configuration = configuration;
         }
 
         public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
@@ -89,9 +96,9 @@ namespace TechStore.API.Services
             return true;
         }
 
-        private static AuthResponseDto MapUserToAuthResponse(User user)
+        private AuthResponseDto MapUserToAuthResponse(User user)
         {
-            return new AuthResponseDto
+            AuthResponseDto response = new AuthResponseDto
             {
                 UserId = user.Id,
                 UserTypeId = user.UserTypeId,
@@ -100,6 +107,26 @@ namespace TechStore.API.Services
                 Email = user.Email,
                 FullName = $"{user.FirstName} {user.LastName}".Trim()
             };
+
+            response.Token = CreateToken(response);
+            return response;
+        }
+
+        private string CreateToken(AuthResponseDto user)
+        {
+            string key = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key is missing.");
+            Claim[] claims =
+            [
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.UserTypeName)
+            ];
+            SigningCredentials credentials = new(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), SecurityAlgorithms.HmacSha256);
+            JwtSecurityToken token = new(
+                issuer: _configuration["Jwt:Issuer"], audience: _configuration["Jwt:Audience"], claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpiresInMinutes")), signingCredentials: credentials);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

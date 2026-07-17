@@ -8,6 +8,8 @@ namespace TechStore.API.DTOs.Orders
 
         public string UserName { get; set; } = string.Empty;
 
+        public string UserEmail { get; set; } = string.Empty;
+
         public int? UserAddressId { get; set; }
 
         public string AddressTitle { get; set; } = string.Empty;

@@ -9,10 +9,10 @@
     </a>
 
     <nav class="admin-nav" aria-label="Admin menüsü">
-      <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
-      <a routerLink="/admin/admin-products" routerLinkActive="active">Ürünler</a>
-      <a routerLink="/admin/admin-orders" routerLinkActive="active">Siparişler</a>
-      <a routerLink="/admin/admin-users" routerLinkActive="active">Kullanıcılar</a>
+      <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Genel Bakış</a>
+      <a routerLink="/admin/products" routerLinkActive="active">Ürünler</a>
+      <a routerLink="/admin/orders" routerLinkActive="active">Siparişler</a>
+      <a routerLink="/admin/users" routerLinkActive="active">Kullanıcılar</a>
     </nav>
 
     <div class="admin-sidebar-footer">
@@ -27,7 +27,7 @@
         <span class="eyebrow">Yönetim paneli</span>
         <h1>Merhaba, {{ adminName }}</h1>
       </div>
-      <span class="admin-status">Admin hesabı</span>
+      <span class="admin-status">Yönetici</span>
     </header>
 
     <main class="admin-main">

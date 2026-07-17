@@ -1,5 +1,1 @@
-<section class="admin-placeholder">
-  <span class="eyebrow">Yönetim</span>
-  <h2>Kullanıcı yönetimi</h2>
-  <p>Kullanıcıları ve kullanıcı rollerini görüntüleme işlemleri bu sayfaya bağlanacak.</p>
-</section>
+<section class="admin-page"><div class="page-heading"><div><span class="eyebrow">Yönetim</span><h2>Kullanıcı yönetimi</h2><p>Kullanıcı hesaplarını ve rollerini yönetin.</p></div><input type="search" placeholder="Kullanıcı ara" [(ngModel)]="searchTerm"></div><p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p><div class="table-card"><p *ngIf="loading">Kullanıcılar yükleniyor…</p><div class="table-wrap" *ngIf="!loading"><table><thead><tr><th>Kullanıcı</th><th>Kullanıcı adı</th><th>E-posta</th><th>Rol</th><th>İşlem</th></tr></thead><tbody><tr *ngFor="let user of filteredUsers"><td><strong>{{ user.firstName }} {{ user.lastName }}</strong></td><td>{{ user.userName }}</td><td>{{ user.email }}</td><td><select [ngModel]="user.userTypeId" (ngModelChange)="changeRole(user,$event)"><option [ngValue]="1">Yönetici</option><option [ngValue]="2">Müşteri</option></select></td><td><button class="danger" type="button" (click)="remove(user)">Pasifleştir</button></td></tr></tbody></table><p class="empty" *ngIf="filteredUsers.length===0">Kullanıcı bulunamadı.</p></div></div></section>

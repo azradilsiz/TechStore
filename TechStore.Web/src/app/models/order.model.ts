@@ -11,6 +11,7 @@ export interface Order {
   id: number;
   userId: number | null;
   userName: string;
+  userEmail: string;
   userAddressId: number | null;
   addressTitle: string;
   guestFullName: string;

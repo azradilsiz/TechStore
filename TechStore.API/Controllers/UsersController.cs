@@ -16,6 +16,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpGet]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
             List<UserDto> users = await _userService.GetAllUsersAsync();
@@ -37,6 +38,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPost]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateUser(CreateUserDto dto)
         {
             if (dto.UserTypeId <= 0)
@@ -75,6 +77,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPut("{userId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(int userId, UpdateUserDto dto)
         {
             if (dto.UserTypeId <= 0)
@@ -113,6 +116,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpDelete("{userId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
             bool result = await _userService.DeleteUserAsync(userId);

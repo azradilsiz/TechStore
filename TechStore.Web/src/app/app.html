@@ -26,7 +26,7 @@
     <a routerLink="/products" routerLinkActive="active-link">Ürünler</a>
     <a routerLink="/cart" routerLinkActive="active-link">Sepet</a>
     <a routerLink="/orders" routerLinkActive="active-link" *ngIf="currentUser">Siparişlerim</a>
-    <a routerLink="/admin" routerLinkActive="active-link" *ngIf="currentUser && isAdmin()">Admin Paneli</a>
+    <a routerLink="/admin" routerLinkActive="active-link" *ngIf="currentUser && isAdmin()">Yönetim Paneli</a>
 
     <a class="account-button login-account" *ngIf="!currentUser" routerLink="/login" routerLinkActive="active-link" aria-label="Giriş yap">
       <span class="account-symbol" aria-hidden="true"></span>

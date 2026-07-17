@@ -17,6 +17,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpGet]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllOrders()
         {
             List<OrderDto> orders = await _orderService.GetAllOrdersAsync();
@@ -190,6 +191,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPut("{orderId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateOrder(int orderId, UpdateOrderDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Status))
@@ -208,6 +210,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpDelete("{orderId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteOrder(int orderId)
         {
             bool result = await _orderService.DeleteOrderAsync(orderId);

@@ -41,6 +41,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPost("import-external")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> ImportExternalProducts()
         {
             int importedCount = await _externalProductService.ImportProductsAsync();
@@ -53,6 +54,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPost]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProduct(CreateProductDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
@@ -76,6 +78,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPut("{productId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProduct(int productId, UpdateProductDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
@@ -104,6 +107,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpDelete("{productId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProduct(int productId)
         {
             bool result = await _productService.DeleteProductAsync(productId);

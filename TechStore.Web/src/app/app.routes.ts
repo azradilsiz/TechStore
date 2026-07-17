@@ -72,15 +72,15 @@ export const routes: Routes = [
         component: AdminDashboardComponent
       },
       {
-        path: 'admin-products',
+        path: 'products',
         component: AdminProductsComponent
       },
       {
-        path: 'admin-orders',
+        path: 'orders',
         component: AdminOrdersComponent
       },
       {
-        path: 'admin-users',
+        path: 'users',
         component: AdminUsersComponent
       }
     ]

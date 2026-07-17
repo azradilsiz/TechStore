@@ -37,6 +37,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPost]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCategory(CreateCategoryDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
@@ -50,6 +51,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPut("{categoryId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCategory(int categoryId, UpdateCategoryDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
@@ -68,6 +70,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpDelete("{categoryId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int categoryId)
         {
             bool result = await _categoryService.DeleteCategoryAsync(categoryId);
