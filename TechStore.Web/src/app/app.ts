@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { AuthResponseDto } from './models/auth.model';
 
@@ -21,7 +20,15 @@ export class App {
   searchTerm = '';
   isCategoryMenuOpen = false;
   currentUser: AuthResponseDto | null = null;
-  isAuthPage = false;
+
+  get isAuthPage(): boolean {
+    return ['/login', '/register', '/forgot-password']
+      .some((path) => this.router.url.startsWith(path));
+  }
+
+  get isAdminPage(): boolean {
+    return this.router.url.startsWith('/admin');
+  }
 
   readonly menuCategories: MenuCategory[] = [
     { label: 'Telefon', value: 'smartphones' },
@@ -46,13 +53,6 @@ export class App {
       this.currentUser = user;
     });
 
-    this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
-      .subscribe((event) => {
-        this.isAuthPage = event.urlAfterRedirects.startsWith('/login') ||
-          event.urlAfterRedirects.startsWith('/register') ||
-          event.urlAfterRedirects.startsWith('/forgot-password');
-      });
   }
 
   searchProducts(): void {
@@ -89,5 +89,9 @@ export class App {
       .slice(0, 2)
       .map((namePart) => namePart.charAt(0).toUpperCase())
       .join('');
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 }

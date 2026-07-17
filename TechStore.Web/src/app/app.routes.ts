@@ -9,6 +9,12 @@ import { ForgotPasswordComponent } from './features/forgot-password/forgot-passw
 import { LoginComponent } from './features/login/login';
 import { ProfileComponent } from './features/profile/profile';
 import { RegisterComponent } from './features/register/register';
+import { adminGuard } from './core/guards/admin.guard';
+import { AdminComponent } from './features/admin/admin';
+import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-dashboard';
+import { AdminProductsComponent } from './features/admin/admin-products/admin-products';
+import { AdminOrdersComponent } from './features/admin/admin-orders/admin-orders';
+import { AdminUsersComponent } from './features/admin/admin-users/admin-users';
 
 export const routes: Routes = [
   {
@@ -50,5 +56,33 @@ export const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent
+  },
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [adminGuard],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'dashboard'
+      },
+      {
+        path: 'dashboard',
+        component: AdminDashboardComponent
+      },
+      {
+        path: 'admin-products',
+        component: AdminProductsComponent
+      },
+      {
+        path: 'admin-orders',
+        component: AdminOrdersComponent
+      },
+      {
+        path: 'admin-users',
+        component: AdminUsersComponent
+      }
+    ]
   },
 ];

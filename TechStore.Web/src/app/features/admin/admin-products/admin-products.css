@@ -1,0 +1,23 @@
+.admin-placeholder {
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.admin-placeholder h2 {
+  margin: 8px 0;
+}
+
+.admin-placeholder p {
+  margin: 0;
+  color: #64748b;
+}
+
+.eyebrow {
+  color: #0891b2;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
