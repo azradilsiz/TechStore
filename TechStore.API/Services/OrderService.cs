@@ -146,7 +146,7 @@ namespace TechStore.API.Services
             {
                 Amount = order.TotalPrice,
                 PaymentMethod = dto.PaymentMethod,
-                PaymentStatus = "Pending",
+                PaymentStatus = PaymentRules.GetInitialStatus(dto.PaymentMethod),
                 PaymentDate = DateTime.UtcNow
             };
 
@@ -206,7 +206,7 @@ namespace TechStore.API.Services
             {
                 Amount = order.TotalPrice,
                 PaymentMethod = dto.PaymentMethod,
-                PaymentStatus = "Pending",
+                PaymentStatus = PaymentRules.GetInitialStatus(dto.PaymentMethod),
                 PaymentDate = DateTime.UtcNow
             };
 
@@ -230,10 +230,18 @@ namespace TechStore.API.Services
                 return false;
             }
 
-            if (dto.Status == "Cancelled" && order.Status != "Cancelled" && order.IsStockDeducted)
+            bool isNewCancellation = dto.Status == "Cancelled" && order.Status != "Cancelled";
+            bool isNewDelivery = dto.Status == "Delivered" && order.Status != "Delivered";
+
+            if (isNewCancellation && order.IsStockDeducted)
             {
                 RestoreStock(order);
                 order.IsStockDeducted = false;
+            }
+
+            if (isNewCancellation || isNewDelivery)
+            {
+                UpdatePaymentStatusForOrderStatus(order, dto.Status);
             }
 
             order.Status = dto.Status;
@@ -261,6 +269,7 @@ namespace TechStore.API.Services
                 }
 
                 order.Status = "Cancelled";
+                UpdatePaymentStatusForOrderStatus(order, "Cancelled");
             }
             await _orderRepository.SaveChangesAsync();
 
@@ -285,6 +294,28 @@ namespace TechStore.API.Services
                 {
                     item.Product.Stock += item.Quantity;
                 }
+            }
+        }
+
+        private static void UpdatePaymentStatusForOrderStatus(Order order, string newOrderStatus)
+        {
+            if (order.Payment == null)
+            {
+                return;
+            }
+
+            if (newOrderStatus == "Cancelled")
+            {
+                order.Payment.PaymentStatus = order.Payment.PaymentStatus == PaymentRules.Paid
+                    ? PaymentRules.Refunded
+                    : PaymentRules.Cancelled;
+                return;
+            }
+
+            if (newOrderStatus == "Delivered" &&
+                order.Payment.PaymentStatus == PaymentRules.PayOnDelivery)
+            {
+                order.Payment.PaymentStatus = PaymentRules.Paid;
             }
         }
 
@@ -322,7 +353,10 @@ namespace TechStore.API.Services
                     UnitPrice = orderItem.UnitPrice,
                     TotalPrice = orderItem.UnitPrice * orderItem.Quantity
                 }).ToList(),
-                HasPayment = order.Payment != null
+                HasPayment = order.Payment != null,
+                PaymentId = order.Payment?.Id,
+                PaymentMethod = order.Payment?.PaymentMethod ?? string.Empty,
+                PaymentStatus = order.Payment?.PaymentStatus ?? string.Empty
             };
         }
     }

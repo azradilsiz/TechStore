@@ -10,3 +10,7 @@ export interface Payment {
 export interface CreatePayment {
   paymentMethod: string;
 }
+
+export interface UpdatePayment {
+  paymentStatus: string;
+}

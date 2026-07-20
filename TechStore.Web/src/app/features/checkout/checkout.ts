@@ -98,6 +98,23 @@ export class CheckoutComponent implements OnInit {
     return this.createdOrder !== null;
   }
 
+  get guestItemCount(): number {
+    return this.guestCart.items.reduce((total, item) => total + item.quantity, 0);
+  }
+
+  getPaymentStatusLabel(paymentStatus: string): string {
+    const labels: Record<string, string> = {
+      Pending: 'Ödeme bekleniyor',
+      Paid: 'Ödendi',
+      PayOnDelivery: 'Teslimatta ödenecek',
+      Failed: 'Ödeme başarısız',
+      Refunded: 'İade edildi',
+      Cancelled: 'Ödeme iptal edildi'
+    };
+
+    return labels[paymentStatus] ?? 'Ödeme bilgisi bulunamadı';
+  }
+
   continueAsGuest(): void {
     this.checkoutMode = 'guest';
     this.errorMessage = '';

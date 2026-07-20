@@ -26,7 +26,7 @@
       <h3>Siparişiniz başarıyla oluşturuldu.</h3>
       <p>
         Sipariş numaranız <strong>#{{ createdOrder.id }}</strong>.
-        {{ isGuestMode ? 'Sipariş bilgilerinizi e-posta adresinizle saklayabilirsiniz.' : 'Siparişinizi hesabınızdan takip edebilirsiniz.' }}
+        {{ isGuestMode ? 'Sipariş bilgileriniz başarıyla kaydedildi.' : 'Siparişinizi hesabınızdan takip edebilirsiniz.' }}
       </p>
 
       <div class="success-actions">
@@ -232,7 +232,7 @@
     </form>
 
     <aside class="checkout-summary">
-      <h3>İşlem Özeti</h3>
+      <h3>Sipariş Özeti</h3>
 
       <ng-container *ngIf="createdOrder; else activeSummary">
         <div class="summary-row">
@@ -247,12 +247,12 @@
 
         <div class="summary-row">
           <span>Ödeme</span>
-          <strong>{{ getPaymentMethodLabel(paymentMethod) }}</strong>
+          <strong>{{ getPaymentMethodLabel(createdOrder.paymentMethod) }}</strong>
         </div>
 
         <div class="result-box" *ngIf="createdOrder.hasPayment">
           <span>Ödeme Durumu</span>
-          <strong>Ödeme bilgisi oluşturuldu</strong>
+          <strong>{{ getPaymentStatusLabel(createdOrder.paymentStatus) }}</strong>
         </div>
       </ng-container>
 
@@ -279,7 +279,7 @@
 
           <div class="summary-row">
             <span>Ürün adedi</span>
-            <strong>{{ guestCart.items.length }}</strong>
+            <strong>{{ guestItemCount }}</strong>
           </div>
         </ng-container>
 

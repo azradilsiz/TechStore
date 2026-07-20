@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using TechStore.API.Constants;
 using TechStore.API.DTOs.Payments;
 using TechStore.API.Helpers;
 using TechStore.API.Services;
@@ -70,6 +71,11 @@ namespace TechStore.API.Controllers
                 return BadRequest("Payment method cannot be empty.");
             }
 
+            if (!PaymentRules.ValidMethods.Contains(dto.PaymentMethod))
+            {
+                return BadRequest("Payment method is invalid.");
+            }
+
             PaymentDto? payment = await _paymentService.CreatePaymentAsync(
                 orderId,
                 currentUserId.Value,
@@ -91,6 +97,11 @@ namespace TechStore.API.Controllers
             if (string.IsNullOrWhiteSpace(dto.PaymentStatus))
             {
                 return BadRequest("Payment status cannot be empty.");
+            }
+
+            if (!PaymentRules.ValidStatuses.Contains(dto.PaymentStatus))
+            {
+                return BadRequest("Payment status is invalid.");
             }
 
             bool result = await _paymentService.UpdatePaymentAsync(paymentId, dto);

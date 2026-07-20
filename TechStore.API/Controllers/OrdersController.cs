@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using TechStore.API.Constants;
 using TechStore.API.DTOs.Orders;
 using TechStore.API.Helpers;
 using TechStore.API.Services;
@@ -133,6 +134,11 @@ namespace TechStore.API.Controllers
                 return BadRequest("Payment method cannot be empty.");
             }
 
+            if (!PaymentRules.ValidMethods.Contains(dto.PaymentMethod))
+            {
+                return BadRequest("Payment method is invalid.");
+            }
+
             OrderDto? order = await _orderService.CreateOrderFromCartAsync(userId, dto);
 
             if (order == null)
@@ -195,6 +201,11 @@ namespace TechStore.API.Controllers
             if (string.IsNullOrWhiteSpace(dto.PaymentMethod))
             {
                 return BadRequest("Payment method cannot be empty.");
+            }
+
+            if (!PaymentRules.ValidMethods.Contains(dto.PaymentMethod))
+            {
+                return BadRequest("Payment method is invalid.");
             }
 
             if (dto.Items.Count == 0)

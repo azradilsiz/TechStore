@@ -31,5 +31,11 @@ namespace TechStore.API.DTOs.Orders
         public List<OrderItemDto> Items { get; set; } = new();
 
         public bool HasPayment { get; set; }
+
+        public int? PaymentId { get; set; }
+
+        public string PaymentMethod { get; set; } = string.Empty;
+
+        public string PaymentStatus { get; set; } = string.Empty;
     }
 }

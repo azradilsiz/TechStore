@@ -1,3 +1,4 @@
+using TechStore.API.Constants;
 using TechStore.API.DTOs.Payments;
 using TechStore.API.Entities;
 using TechStore.API.Repositories.Interfaces;
@@ -36,7 +37,7 @@ namespace TechStore.API.Services
         {
             Order? order = await _paymentRepository.GetOrderByIdAsync(orderId);
 
-            if (order == null || (!isAdmin && order.UserId != userId))
+            if (order == null || order.Payment != null || (!isAdmin && order.UserId != userId))
             {
                 return null;
             }
@@ -47,7 +48,7 @@ namespace TechStore.API.Services
                 Order = order,
                 Amount = order.TotalPrice,
                 PaymentMethod = dto.PaymentMethod,
-                PaymentStatus = "Pending",
+                PaymentStatus = PaymentRules.GetInitialStatus(dto.PaymentMethod),
                 PaymentDate = DateTime.UtcNow
             };
 

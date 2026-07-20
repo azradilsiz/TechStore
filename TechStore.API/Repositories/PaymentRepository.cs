@@ -30,7 +30,9 @@ namespace TechStore.API.Repositories
 
         public async Task<Order?> GetOrderByIdAsync(int orderId)
         {
-            return await _context.Orders.FindAsync(orderId);
+            return await _context.Orders
+                .Include(order => order.Payment)
+                .FirstOrDefaultAsync(order => order.Id == orderId);
         }
 
         public async Task AddAsync(Payment payment)

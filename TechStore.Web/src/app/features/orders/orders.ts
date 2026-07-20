@@ -62,6 +62,9 @@ export class OrdersComponent implements OnInit {
   getOrderStatusLabel(status: string): string {
     const statusLabels: Record<string, string> = {
       pending: 'Sipariş alındı',
+      processing: 'Hazırlanıyor',
+      shipped: 'Kargoda',
+      delivered: 'Teslim edildi',
       completed: 'Tamamlandı',
       cancelled: 'İptal edildi'
     };
@@ -73,7 +76,32 @@ export class OrdersComponent implements OnInit {
     return status.trim().toLocaleLowerCase('tr-TR') === 'cancelled';
   }
 
-  getPaymentLabel(order: Order): string {
-    return order.hasPayment ? 'Ödeme bilgisi oluşturuldu' : 'Ödeme bilgisi eksik';
+  getPaymentMethodLabel(paymentMethod: string | null | undefined): string {
+    const labels: Record<string, string> = {
+      'Credit Card': 'Kredi Kartı',
+      'Bank Transfer': 'Banka Havalesi',
+      Cash: 'Kapıda Ödeme'
+    };
+
+    return paymentMethod ? (labels[paymentMethod] ?? paymentMethod) : 'Belirtilmemiş';
+  }
+
+  getPaymentStatusLabel(paymentStatus: string | null | undefined): string {
+    const labels: Record<string, string> = {
+      Pending: 'Ödeme bekleniyor',
+      Paid: 'Ödendi',
+      PayOnDelivery: 'Teslimatta ödenecek',
+      Failed: 'Ödeme başarısız',
+      Refunded: 'İade edildi',
+      Cancelled: 'Ödeme iptal edildi'
+    };
+
+    return paymentStatus
+      ? (labels[paymentStatus] ?? paymentStatus)
+      : 'Ödeme Bilgisi Bulunamadı';
+  }
+
+  getPaymentStatusClass(paymentStatus: string | null | undefined): string {
+    return paymentStatus?.trim().toLocaleLowerCase('tr-TR') || 'unknown';
   }
 }

@@ -8,7 +8,7 @@
     <p *ngIf="loading">Siparişler yükleniyor…</p>
     <div class="table-wrap" *ngIf="!loading">
       <table>
-        <thead><tr><th>No</th><th>Müşteri</th><th>Tarih</th><th>Tutar</th><th>Ürünler</th><th>Durum</th></tr></thead>
+        <thead><tr><th>No</th><th>Müşteri</th><th>Tarih</th><th>Tutar</th><th>Ürünler</th><th>Ödeme</th><th>Sipariş Durumu</th></tr></thead>
         <tbody>
           <tr *ngFor="let order of filteredOrders">
             <td>#{{ order.id }}</td>
@@ -16,6 +16,13 @@
             <td>{{ order.orderDate | date:'dd.MM.yyyy HH:mm' }}</td>
             <td>{{ order.totalPrice | currency:'TRY':'symbol-narrow':'1.2-2':'tr-TR' }}</td>
             <td><strong>{{ order.items.length }} çeşit</strong><small>{{ totalQuantity(order) }} adet</small></td>
+            <td>
+              <strong>{{ paymentMethodLabel(order.paymentMethod) }}</strong>
+              <select *ngIf="order.paymentId" [ngModel]="order.paymentStatus" (ngModelChange)="changePaymentStatus(order,$event)">
+                <option *ngFor="let paymentStatus of paymentStatuses" [value]="paymentStatus.value">{{ paymentStatus.label }}</option>
+              </select>
+              <small *ngIf="!order.paymentId">Ödeme kaydı yok</small>
+            </td>
             <td><select [ngModel]="order.status" (ngModelChange)="changeStatus(order,$event)"><option *ngFor="let status of statuses" [value]="status.value">{{ status.label }}</option></select></td>
           </tr>
         </tbody>

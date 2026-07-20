@@ -30,21 +30,29 @@
           <span class="status-badge" [class.cancelled]="isOrderCancelled(order.status)">
             {{ getOrderStatusLabel(order.status) }}
           </span>
-          <span class="payment-badge" *ngIf="!isOrderCancelled(order.status)" [class.waiting]="!order.hasPayment">
-            {{ getPaymentLabel(order) }}
+          <span
+            class="payment-badge"
+            *ngIf="order.paymentStatus"
+            [ngClass]="getPaymentStatusClass(order.paymentStatus)">
+            {{ getPaymentStatusLabel(order.paymentStatus) }}
           </span>
         </div>
       </div>
 
       <div class="order-details">
         <div>
-          <span>Teslimat</span>
+          <span>Teslimat Adresi</span>
           <strong>{{ order.addressTitle || 'Adres bilgisi yok' }}</strong>
         </div>
 
         <div>
+          <span>Ödeme Yöntemi</span>
+          <strong>{{ getPaymentMethodLabel(order.paymentMethod) }}</strong>
+        </div>
+
+        <div class="order-total">
           <span>Toplam Tutar</span>
-          <strong>{{ order.totalPrice }} TL</strong>
+          <strong>{{ order.totalPrice | currency:'TRY':'symbol-narrow':'1.2-2':'tr-TR' }}</strong>
         </div>
       </div>
 

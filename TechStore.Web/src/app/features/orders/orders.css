@@ -92,14 +92,31 @@
   font-weight: 700;
 }
 
-.payment-badge.waiting {
+.payment-badge.pending,
+.payment-badge.payondelivery {
   background: #fff7ed;
   color: #c2410c;
 }
 
+.payment-badge.failed,
+.payment-badge.cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.payment-badge.refunded {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.payment-badge.unknown {
+  background: #f1f5f9;
+  color: #475569;
+}
+
 .order-details {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   padding: 16px 0;
   border-bottom: 1px solid #e5e7eb;
@@ -117,6 +134,10 @@
 
 .order-details strong {
   color: #111827;
+}
+
+.order-total {
+  text-align: right;
 }
 
 .order-items {

@@ -23,6 +23,9 @@ export interface Order {
   status: string;
   items: OrderItem[];
   hasPayment: boolean;
+  paymentId: number | null;
+  paymentMethod: string;
+  paymentStatus: string;
 }
 
 export interface CreateOrderFromCart {
