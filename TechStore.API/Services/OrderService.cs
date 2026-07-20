@@ -39,8 +39,13 @@ namespace TechStore.API.Services
             return orders.Select(MapOrderToDto).ToList();
         }
 
-        public async Task<OrderDto?> CreateOrderAsync(CreateOrderDto dto)
+        public async Task<OrderDto?> CreateOrderAsync(int userId, CreateOrderDto dto)
         {
+            if (!await _orderRepository.UserAddressBelongsToUserAsync(dto.UserAddressId, userId))
+            {
+                return null;
+            }
+
             List<int> productIds = dto.Items
                 .Select(item => item.ProductId)
                 .Distinct()
@@ -55,7 +60,7 @@ namespace TechStore.API.Services
 
             Order order = new Order
             {
-                UserId = dto.UserId,
+                UserId = userId,
                 UserAddressId = dto.UserAddressId,
                 OrderDate = DateTime.UtcNow,
                 Status = "Pending"
@@ -84,6 +89,11 @@ namespace TechStore.API.Services
 
         public async Task<OrderDto?> CreateOrderFromCartAsync(int userId, CreateOrderFromCartDto dto)
         {
+            if (!await _orderRepository.UserAddressBelongsToUserAsync(dto.UserAddressId, userId))
+            {
+                return null;
+            }
+
             Cart? cart = await _orderRepository.GetCartByUserIdWithItemsAndProductsAsync(userId);
 
             if (cart == null || cart.CartItems.Count == 0)

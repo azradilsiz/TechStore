@@ -39,11 +39,11 @@ namespace TechStore.API.Services
             return addresses.Select(address => MapAddressToDto(address)).ToList();
         }
 
-        public async Task<UserAddressDto> CreateUserAddressAsync(CreateUserAddressDto dto)
+        public async Task<UserAddressDto> CreateUserAddressAsync(int userId, CreateUserAddressDto dto)
         {
             UserAddress address = new UserAddress
             {
-                UserId = dto.UserId,
+                UserId = userId,
                 City = dto.City,
                 District = dto.District,
                 AddressDetail = dto.AddressDetail,

@@ -73,9 +73,9 @@ namespace TechStore.API.Services
             return MapUserToAuthResponse(user);
         }
 
-        public async Task<bool> ChangePasswordAsync(ChangePasswordDto dto)
+        public async Task<bool> ChangePasswordAsync(int userId, ChangePasswordDto dto)
         {
-            User? user = await _userRepository.GetByIdAsync(dto.UserId);
+            User? user = await _userRepository.GetByIdAsync(userId);
 
             if (user == null)
             {
@@ -117,7 +117,7 @@ namespace TechStore.API.Services
             string key = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key is missing.");
             Claim[] claims =
             [
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.UserTypeName)

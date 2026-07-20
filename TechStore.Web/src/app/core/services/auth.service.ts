@@ -57,10 +57,17 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.currentUserSubject.value !== null;
+    const user = this.currentUserSubject.value;
+    if (!user || this.isTokenExpired(user.token)) {
+      if (user) this.logout();
+      return false;
+    }
+
+    return true;
   }
 
   isAdmin(): boolean {
+    if (!this.isLoggedIn()) return false;
     const user = this.currentUserSubject.value;
     return user?.userTypeName.toLowerCase() === 'admin' || user?.userTypeId === 1;
   }
@@ -77,7 +84,27 @@ export class AuthService {
       return null;
     }
 
-    return JSON.parse(userJson) as AuthResponseDto;
+    try {
+      const user = JSON.parse(userJson) as AuthResponseDto;
+      if (!user.token || this.isTokenExpired(user.token)) {
+        localStorage.removeItem(this.storageKey);
+        return null;
+      }
+
+      return user;
+    } catch {
+      localStorage.removeItem(this.storageKey);
+      return null;
+    }
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))) as { exp?: number };
+      return typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now();
+    } catch {
+      return true;
+    }
   }
 
   private mergeGuestCartToUserCart(user: AuthResponseDto): Observable<AuthResponseDto> {
@@ -89,7 +116,6 @@ export class AuthService {
 
     const requests = guestCart.items.map((item) =>
       this.cartService.addItemToCart({
-        userId: user.userId,
         productId: item.productId,
         quantity: item.quantity
       })

@@ -32,11 +32,11 @@ namespace TechStore.API.Services
             return MapPaymentToDto(payment);
         }
 
-        public async Task<PaymentDto?> CreatePaymentAsync(int orderId, CreatePaymentDto dto)
+        public async Task<PaymentDto?> CreatePaymentAsync(int orderId, int userId, bool isAdmin, CreatePaymentDto dto)
         {
             Order? order = await _paymentRepository.GetOrderByIdAsync(orderId);
 
-            if (order == null)
+            if (order == null || (!isAdmin && order.UserId != userId))
             {
                 return null;
             }
@@ -44,6 +44,7 @@ namespace TechStore.API.Services
             Payment payment = new Payment
             {
                 OrderId = orderId,
+                Order = order,
                 Amount = order.TotalPrice,
                 PaymentMethod = dto.PaymentMethod,
                 PaymentStatus = "Pending",
@@ -93,6 +94,7 @@ namespace TechStore.API.Services
             {
                 Id = payment.Id,
                 OrderId = payment.OrderId,
+                UserId = payment.Order?.UserId,
                 Amount = payment.Amount,
                 PaymentMethod = payment.PaymentMethod,
                 PaymentStatus = payment.PaymentStatus,

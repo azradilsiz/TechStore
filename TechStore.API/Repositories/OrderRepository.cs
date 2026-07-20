@@ -63,6 +63,14 @@ namespace TechStore.API.Repositories
                 .FirstOrDefaultAsync(cart => cart.UserId == userId);
         }
 
+        public async Task<bool> UserAddressBelongsToUserAsync(int userAddressId, int userId)
+        {
+            return await _context.UserAddresses.AnyAsync(address =>
+                address.Id == userAddressId &&
+                address.UserId == userId &&
+                !address.IsDeleted);
+        }
+
         public async Task<Order?> GetByIdWithItemsAndPaymentAsync(int id)
         {
             return await _context.Orders

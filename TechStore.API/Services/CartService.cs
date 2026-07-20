@@ -25,15 +25,15 @@ namespace TechStore.API.Services
             return MapCartToDto(cart);
         }
 
-        public async Task<CartDto> AddItemToCartAsync(AddCartItemDto dto)
+        public async Task<CartDto> AddItemToCartAsync(int userId, AddCartItemDto dto)
         {
-            Cart? cart = await _cartRepository.GetByUserIdWithItemsAsync(dto.UserId);
+            Cart? cart = await _cartRepository.GetByUserIdWithItemsAsync(userId);
 
             if (cart == null)
             {
                 cart = new Cart
                 {
-                    UserId = dto.UserId
+                    UserId = userId
                 };
 
                 await _cartRepository.AddCartAsync(cart);
@@ -61,14 +61,14 @@ namespace TechStore.API.Services
 
             await _cartRepository.SaveChangesAsync();
 
-            return (await GetCartByUserIdAsync(dto.UserId))!;
+            return (await GetCartByUserIdAsync(userId))!;
         }
 
-        public async Task<bool> UpdateCartItemAsync(int cartItemId, UpdateCartItemDto dto)
+        public async Task<bool> UpdateCartItemAsync(int userId, int cartItemId, UpdateCartItemDto dto)
         {
             CartItem? cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
 
-            if (cartItem == null)
+            if (cartItem == null || cartItem.Cart?.UserId != userId)
             {
                 return false;
             }
@@ -80,11 +80,11 @@ namespace TechStore.API.Services
             return true;
         }
 
-        public async Task<bool> RemoveCartItemAsync(int cartItemId)
+        public async Task<bool> RemoveCartItemAsync(int userId, int cartItemId)
         {
             CartItem? cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
 
-            if (cartItem == null)
+            if (cartItem == null || cartItem.Cart?.UserId != userId)
             {
                 return false;
             }

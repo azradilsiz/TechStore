@@ -10,6 +10,7 @@ import { LoginComponent } from './features/login/login';
 import { ProfileComponent } from './features/profile/profile';
 import { RegisterComponent } from './features/register/register';
 import { adminGuard } from './core/guards/admin.guard';
+import { authGuard } from './core/guards/auth.guard';
 import { AdminComponent } from './features/admin/admin';
 import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-dashboard';
 import { AdminProductsComponent } from './features/admin/admin-products/admin-products';
@@ -39,11 +40,13 @@ export const routes: Routes = [
   },
   {
     path: 'orders',
-    component: OrdersComponent
+    component: OrdersComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'profile',
-    component: ProfileComponent
+    component: ProfileComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'login',

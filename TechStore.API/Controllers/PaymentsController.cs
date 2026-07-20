@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TechStore.API.DTOs.Payments;
+using TechStore.API.Helpers;
 using TechStore.API.Services;
 
 namespace TechStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PaymentsController : ControllerBase
     {
         private readonly PaymentService _paymentService;
@@ -16,6 +19,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllPayments()
         {
             List<PaymentDto> payments = await _paymentService.GetAllPaymentsAsync();
@@ -33,12 +37,29 @@ namespace TechStore.API.Controllers
                 return NotFound();
             }
 
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && payment.UserId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             return Ok(payment);
         }
 
         [HttpPost("order/{orderId}")]
         public async Task<IActionResult> CreatePayment(int orderId, CreatePaymentDto dto)
         {
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
             if (orderId <= 0)
             {
                 return BadRequest("OrderId must be greater than zero.");
@@ -49,7 +70,11 @@ namespace TechStore.API.Controllers
                 return BadRequest("Payment method cannot be empty.");
             }
 
-            PaymentDto? payment = await _paymentService.CreatePaymentAsync(orderId, dto);
+            PaymentDto? payment = await _paymentService.CreatePaymentAsync(
+                orderId,
+                currentUserId.Value,
+                User.IsInRole("Admin"),
+                dto);
 
             if (payment == null)
             {
@@ -60,6 +85,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPut("{paymentId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePayment(int paymentId, UpdatePaymentDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.PaymentStatus))
@@ -78,6 +104,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpDelete("{paymentId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePayment(int paymentId)
         {
             bool result = await _paymentService.DeletePaymentAsync(paymentId);

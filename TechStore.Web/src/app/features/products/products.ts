@@ -145,7 +145,6 @@ export class ProductsComponent implements OnInit {
     }
 
     this.cartService.addItemToCart({
-      userId: currentUserId,
       productId: product.id,
       quantity: 1
     }).subscribe({

@@ -31,7 +31,9 @@ namespace TechStore.API.Repositories
 
         public async Task<CartItem?> GetCartItemByIdAsync(int cartItemId)
         {
-            return await _context.CartItems.FindAsync(cartItemId);
+            return await _context.CartItems
+                .Include(cartItem => cartItem.Cart)
+                .FirstOrDefaultAsync(cartItem => cartItem.Id == cartItemId);
         }
 
         public async Task AddCartAsync(Cart cart)

@@ -91,7 +91,6 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
     this.newAddress = {
-      userId: this.currentUser.userId,
       title: address.title,
       city: address.city,
       district: address.district,
@@ -129,7 +128,6 @@ export class ProfileComponent implements OnInit {
 
     this.userAddressService.createUserAddress({
       ...this.newAddress,
-      userId: this.currentUser.userId,
       title: this.newAddress.title.trim(),
       city: this.newAddress.city.trim(),
       district: this.newAddress.district.trim(),
@@ -197,7 +195,6 @@ export class ProfileComponent implements OnInit {
     }
 
     const dto: ChangePasswordDto = {
-      userId: this.currentUser.userId,
       currentPassword: this.passwordForm.currentPassword,
       newPassword: this.passwordForm.newPassword
     };
@@ -274,7 +271,6 @@ export class ProfileComponent implements OnInit {
 
   private createEmptyAddress(): CreateUserAddress {
     return {
-      userId: this.currentUser?.userId ?? 0,
       title: '',
       city: '',
       district: '',

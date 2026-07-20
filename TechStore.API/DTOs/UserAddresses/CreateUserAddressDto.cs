@@ -2,8 +2,6 @@
 {
     public class CreateUserAddressDto
     {
-        public int UserId { get; set; }
-
         public string City { get; set; } = string.Empty;
 
         public string District { get; set; } = string.Empty;

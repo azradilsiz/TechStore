@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TechStore.API.DTOs.UserAddresses;
 using TechStore.API.Helpers;
 using TechStore.API.Services;
@@ -7,6 +8,7 @@ namespace TechStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserAddressesController : ControllerBase
     {
         private readonly UserAddressService _userAddressService;
@@ -17,6 +19,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUserAddresses()
         {
             List<UserAddressDto> addresses = await _userAddressService.GetAllUserAddressesAsync();
@@ -34,12 +37,34 @@ namespace TechStore.API.Controllers
                 return NotFound();
             }
 
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && address.UserId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             return Ok(address);
         }
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetUserAddressesByUserId(int userId)
         {
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && userId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             List<UserAddressDto> addresses = await _userAddressService.GetUserAddressesByUserIdAsync(userId);
 
             return Ok(addresses);
@@ -48,9 +73,10 @@ namespace TechStore.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUserAddress(CreateUserAddressDto dto)
         {
-            if (dto.UserId <= 0)
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
             {
-                return BadRequest("UserId must be greater than zero.");
+                return Unauthorized();
             }
 
             if (string.IsNullOrWhiteSpace(dto.City))
@@ -73,7 +99,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Phone number must be 10 digits or 11 digits starting with 0.");
             }
 
-            UserAddressDto address = await _userAddressService.CreateUserAddressAsync(dto);
+            UserAddressDto address = await _userAddressService.CreateUserAddressAsync(currentUserId.Value, dto);
 
             return CreatedAtAction(nameof(GetUserAddressById), new { userAddressId = address.Id }, address);
         }
@@ -81,6 +107,23 @@ namespace TechStore.API.Controllers
         [HttpPut("{userAddressId}")]
         public async Task<IActionResult> UpdateUserAddress(int userAddressId, UpdateUserAddressDto dto)
         {
+            UserAddressDto? address = await _userAddressService.GetUserAddressByIdAsync(userAddressId);
+            if (address == null)
+            {
+                return NotFound();
+            }
+
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && address.UserId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             if (string.IsNullOrWhiteSpace(dto.City))
             {
                 return BadRequest("City cannot be empty.");
@@ -114,6 +157,23 @@ namespace TechStore.API.Controllers
         [HttpDelete("{userAddressId}")]
         public async Task<IActionResult> DeleteUserAddress(int userAddressId)
         {
+            UserAddressDto? address = await _userAddressService.GetUserAddressByIdAsync(userAddressId);
+            if (address == null)
+            {
+                return NotFound();
+            }
+
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && address.UserId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             bool result = await _userAddressService.DeleteUserAddressAsync(userAddressId);
 
             if (!result)

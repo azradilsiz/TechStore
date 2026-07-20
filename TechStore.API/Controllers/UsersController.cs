@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TechStore.API.DTOs.Users;
+using TechStore.API.Helpers;
 using TechStore.API.Services;
 
 namespace TechStore.API.Controllers
@@ -25,8 +26,20 @@ namespace TechStore.API.Controllers
         }
 
         [HttpGet("{userId}")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> GetUserById(int userId)
         {
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && userId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             UserDto? user = await _userService.GetUserByIdAsync(userId);
 
             if (user == null)

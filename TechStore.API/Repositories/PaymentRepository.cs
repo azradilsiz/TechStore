@@ -16,12 +16,16 @@ namespace TechStore.API.Repositories
 
         public async Task<List<Payment>> GetAllAsync()
         {
-            return await _context.Payments.ToListAsync();
+            return await _context.Payments
+                .Include(payment => payment.Order)
+                .ToListAsync();
         }
 
         public async Task<Payment?> GetByIdAsync(int id)
         {
-            return await _context.Payments.FindAsync(id);
+            return await _context.Payments
+                .Include(payment => payment.Order)
+                .FirstOrDefaultAsync(payment => payment.Id == id);
         }
 
         public async Task<Order?> GetOrderByIdAsync(int orderId)

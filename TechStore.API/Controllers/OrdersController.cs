@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TechStore.API.DTOs.Orders;
 using TechStore.API.Helpers;
 using TechStore.API.Services;
@@ -7,6 +8,7 @@ namespace TechStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrdersController : ControllerBase
     {
         private readonly OrderService _orderService;
@@ -35,12 +37,34 @@ namespace TechStore.API.Controllers
                 return NotFound();
             }
 
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && order.UserId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             return Ok(order);
         }
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetOrdersByUserId(int userId)
         {
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (!User.IsInRole("Admin") && userId != currentUserId.Value)
+            {
+                return Forbid();
+            }
+
             List<OrderDto> orders = await _orderService.GetOrdersByUserIdAsync(userId);
 
             return Ok(orders);
@@ -49,9 +73,10 @@ namespace TechStore.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder(CreateOrderDto dto)
         {
-            if (dto.UserId <= 0)
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
             {
-                return BadRequest("UserId must be greater than zero.");
+                return Unauthorized();
             }
 
             if (dto.UserAddressId <= 0)
@@ -74,7 +99,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("Quantity must be greater than zero.");
             }
 
-            OrderDto? order = await _orderService.CreateOrderAsync(dto);
+            OrderDto? order = await _orderService.CreateOrderAsync(currentUserId.Value, dto);
 
             if (order == null)
             {
@@ -87,9 +112,15 @@ namespace TechStore.API.Controllers
         [HttpPost("user/{userId}/from-cart")]
         public async Task<IActionResult> CreateOrderFromCart(int userId, CreateOrderFromCartDto dto)
         {
-            if (userId <= 0)
+            int? currentUserId = User.GetUserId();
+            if (currentUserId == null)
             {
-                return BadRequest("UserId must be greater than zero.");
+                return Unauthorized();
+            }
+
+            if (userId != currentUserId.Value)
+            {
+                return Forbid();
             }
 
             if (dto.UserAddressId <= 0)
@@ -113,6 +144,7 @@ namespace TechStore.API.Controllers
         }
 
         [HttpPost("guest")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateGuestOrder(CreateGuestOrderDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.FirstName))

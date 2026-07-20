@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TechStore.API.DTOs.Auth;
 using TechStore.API.Helpers;
 using TechStore.API.Services;
@@ -92,12 +93,15 @@ namespace TechStore.API.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
         {
-            if (dto.UserId <= 0)
+            int? userId = User.GetUserId();
+
+            if (userId == null)
             {
-                return BadRequest("UserId must be greater than zero.");
+                return Unauthorized();
             }
 
             if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
@@ -115,7 +119,7 @@ namespace TechStore.API.Controllers
                 return BadRequest("New password must be at least 6 characters.");
             }
 
-            bool result = await _authService.ChangePasswordAsync(dto);
+            bool result = await _authService.ChangePasswordAsync(userId.Value, dto);
 
             if (!result)
             {

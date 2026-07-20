@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TechStore.API.DTOs.UserTypes;
 using TechStore.API.Services;
 
@@ -6,6 +7,7 @@ namespace TechStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class UserTypesController : ControllerBase
     {
         private readonly UserTypeService _userTypeService;

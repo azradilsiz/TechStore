@@ -91,7 +91,6 @@ export class ProductDetailComponent implements OnInit {
     }
 
     this.cartService.addItemToCart({
-      userId: currentUserId,
       productId: this.product.id,
       quantity: 1
     }).subscribe({

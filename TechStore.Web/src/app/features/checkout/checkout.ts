@@ -173,7 +173,6 @@ export class CheckoutComponent implements OnInit {
 
     this.userAddressService.createUserAddress({
       ...this.newAddress,
-      userId: this.currentUserId,
       phone: this.normalizePhone(this.newAddress.phone)
     }).subscribe({
       next: (address) => {
@@ -284,7 +283,6 @@ export class CheckoutComponent implements OnInit {
 
   private createEmptyAddress(): CreateUserAddress {
     return {
-      userId: this.currentUserId ?? 0,
       title: '',
       city: '',
       district: '',

@@ -14,6 +14,8 @@ namespace TechStore.API.Repositories.Interfaces
 
         Task<Cart?> GetCartByUserIdWithItemsAndProductsAsync(int userId);
 
+        Task<bool> UserAddressBelongsToUserAsync(int userAddressId, int userId);
+
         Task<Order?> GetByIdWithItemsAndPaymentAsync(int id);
 
         Task<Order?> GetByIdAsync(int id);

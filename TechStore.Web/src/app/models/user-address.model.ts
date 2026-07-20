@@ -9,7 +9,6 @@ export interface UserAddress {
 }
 
 export interface CreateUserAddress {
-  userId: number;
   city: string;
   district: string;
   addressDetail: string;

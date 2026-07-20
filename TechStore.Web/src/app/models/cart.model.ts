@@ -15,7 +15,6 @@ export interface Cart {
 }
 
 export interface AddCartItem {
-  userId: number;
   productId: number;
   quantity: number;
 }
