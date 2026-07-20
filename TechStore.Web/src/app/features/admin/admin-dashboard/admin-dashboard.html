@@ -45,6 +45,6 @@
 
   <div class="recent-orders" *ngIf="recentOrders.length">
     <div class="section-title"><strong>Son siparişler</strong><a routerLink="/admin/orders">Tümünü gör</a></div>
-    <div class="recent-row" *ngFor="let order of recentOrders"><span>#{{ order.id }} · {{ order.userName || order.guestFullName || 'Misafir' }}</span><strong>{{ order.totalPrice | currency:'TRY':'symbol-narrow':'1.2-2':'tr-TR' }}</strong><small>{{ statusLabel(order.status) }}</small></div>
+    <div class="recent-row" *ngFor="let order of recentOrders"><span>{{ order.orderNumber }} · {{ order.userName || order.guestFullName || 'Misafir' }}</span><strong>{{ order.totalPrice | currency:'TRY':'symbol-narrow':'1.2-2':'tr-TR' }}</strong><small>{{ statusLabel(order.status) }}</small></div>
   </div>
 </section>

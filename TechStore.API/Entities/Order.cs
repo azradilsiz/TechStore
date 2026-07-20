@@ -4,6 +4,7 @@
     {
 
         public int Id { get; set; }
+        public string OrderNumber { get; set; } = string.Empty;
         public int? UserId { get; set; }
         public int? UserAddressId { get; set; }
         public decimal TotalPrice { get; set; }

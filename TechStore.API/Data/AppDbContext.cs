@@ -28,5 +28,18 @@ namespace TechStore.API.Data
         public DbSet<OrderItem> OrderItems { get; set; }
 
         public DbSet<Payment> Payments { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Order>()
+                .Property(order => order.OrderNumber)
+                .HasMaxLength(24);
+
+            modelBuilder.Entity<Order>()
+                .HasIndex(order => order.OrderNumber)
+                .IsUnique();
+        }
     }
 }

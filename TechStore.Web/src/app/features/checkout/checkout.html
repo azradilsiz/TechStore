@@ -25,7 +25,7 @@
       <span class="success-kicker">Sipariş alındı</span>
       <h3>Siparişiniz başarıyla oluşturuldu.</h3>
       <p>
-        Sipariş numaranız <strong>#{{ createdOrder.id }}</strong>.
+        Sipariş numaranız <strong>{{ createdOrder.orderNumber }}</strong>.
         {{ isGuestMode ? 'Sipariş bilgileriniz başarıyla kaydedildi.' : 'Siparişinizi hesabınızdan takip edebilirsiniz.' }}
       </p>
 
@@ -237,7 +237,7 @@
       <ng-container *ngIf="createdOrder; else activeSummary">
         <div class="summary-row">
           <span>Sipariş No</span>
-          <strong>#{{ createdOrder.id }}</strong>
+          <strong>{{ createdOrder.orderNumber }}</strong>
         </div>
 
         <div class="summary-row">

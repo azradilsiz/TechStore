@@ -62,6 +62,7 @@ namespace TechStore.API.Services
 
             Order order = new Order
             {
+                OrderNumber = GenerateOrderNumber(),
                 UserId = userId,
                 UserAddressId = dto.UserAddressId,
                 OrderDate = DateTime.UtcNow,
@@ -120,6 +121,7 @@ namespace TechStore.API.Services
 
             Order order = new Order
             {
+                OrderNumber = GenerateOrderNumber(),
                 UserId = userId,
                 UserAddressId = dto.UserAddressId,
                 OrderDate = DateTime.UtcNow,
@@ -175,6 +177,7 @@ namespace TechStore.API.Services
 
             Order order = new Order
             {
+                OrderNumber = GenerateOrderNumber(),
                 OrderDate = DateTime.UtcNow,
                 Status = "Pending",
                 IsStockDeducted = true,
@@ -286,6 +289,12 @@ namespace TechStore.API.Services
                     products[item.Key].Stock >= item.Value);
         }
 
+        private static string GenerateOrderNumber()
+        {
+            string uniquePart = Guid.NewGuid().ToString("N")[..8].ToUpperInvariant();
+            return $"TS-{DateTime.UtcNow:yyyyMMdd}-{uniquePart}";
+        }
+
         private static void RestoreStock(Order order)
         {
             foreach (OrderItem item in order.OrderItems)
@@ -324,6 +333,7 @@ namespace TechStore.API.Services
             return new OrderDto
             {
                 Id = order.Id,
+                OrderNumber = order.OrderNumber,
                 UserId = order.UserId,
                 UserName = order.User != null
                     ? $"{order.User.FirstName} {order.User.LastName}".Trim()

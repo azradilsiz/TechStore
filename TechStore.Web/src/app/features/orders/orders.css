@@ -36,10 +36,11 @@
 }
 
 .order-card {
-  padding: 20px;
+  padding: 22px;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .order-header {
@@ -51,15 +52,34 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
-.order-header h3 {
+.order-identity {
+  display: grid;
+  gap: 8px;
   margin: 0;
-  font-size: 20px;
 }
 
-.order-header p {
-  margin: 6px 0 0;
-  color: #6b7280;
-  font-size: 14px;
+.order-identity > div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.order-identity dt {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.order-identity dd {
+  margin: 0;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.order-identity time {
+  color: inherit;
+  font: inherit;
 }
 
 .status-badge {
@@ -140,10 +160,22 @@
   text-align: right;
 }
 
+.payment-detail {
+  text-align: center;
+}
+
 .order-items {
   display: grid;
   gap: 10px;
   padding-top: 16px;
+}
+
+.order-items h4 {
+  margin: 0 0 2px;
+  color: #64748b;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .order-item {
@@ -175,5 +207,15 @@
 
   .status-group {
     justify-content: flex-start;
+  }
+
+  .order-identity > div {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .order-total,
+  .payment-detail {
+    text-align: left;
   }
 }

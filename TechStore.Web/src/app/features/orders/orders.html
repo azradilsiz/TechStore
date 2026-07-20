@@ -21,10 +21,20 @@
   <div class="orders-list" *ngIf="!isLoading && !errorMessage && orders.length > 0">
     <article class="order-card" *ngFor="let order of orders">
       <div class="order-header">
-        <div>
-          <h3>Sipariş #{{ order.id }}</h3>
-          <p>{{ order.orderDate | date: 'dd.MM.yyyy HH:mm' }}</p>
-        </div>
+        <dl class="order-identity">
+          <div>
+            <dt>Sipariş No:</dt>
+            <dd>{{ order.orderNumber }}</dd>
+          </div>
+          <div>
+            <dt>Sipariş Tarihi:</dt>
+            <dd>
+              <time [attr.datetime]="order.orderDate">
+                {{ order.orderDate | date: 'd MMMM y, HH:mm' }}
+              </time>
+            </dd>
+          </div>
+        </dl>
 
         <div class="status-group">
           <span class="status-badge" [class.cancelled]="isOrderCancelled(order.status)">
@@ -45,7 +55,7 @@
           <strong>{{ order.addressTitle || 'Adres bilgisi yok' }}</strong>
         </div>
 
-        <div>
+        <div class="payment-detail">
           <span>Ödeme Yöntemi</span>
           <strong>{{ getPaymentMethodLabel(order.paymentMethod) }}</strong>
         </div>
@@ -57,9 +67,12 @@
       </div>
 
       <div class="order-items">
+        <h4>Sipariş Ürünleri</h4>
         <div class="order-item" *ngFor="let item of order.items">
           <span>{{ item.productName }}</span>
-          <strong>{{ item.quantity }} x {{ item.unitPrice }} TL</strong>
+          <strong>
+            {{ item.quantity }} × {{ item.unitPrice | currency:'TRY':'symbol-narrow':'1.2-2':'tr-TR' }}
+          </strong>
         </div>
       </div>
     </article>

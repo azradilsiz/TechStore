@@ -11,7 +11,7 @@
         <thead><tr><th>No</th><th>Müşteri</th><th>Tarih</th><th>Tutar</th><th>Ürünler</th><th>Ödeme</th><th>Sipariş Durumu</th></tr></thead>
         <tbody>
           <tr *ngFor="let order of filteredOrders">
-            <td>#{{ order.id }}</td>
+            <td>{{ order.orderNumber }}</td>
             <td><strong>{{ customerName(order) }}</strong><small>{{ order.userEmail || order.guestEmail }}</small></td>
             <td>{{ order.orderDate | date:'dd.MM.yyyy HH:mm' }}</td>
             <td>{{ order.totalPrice | currency:'TRY':'symbol-narrow':'1.2-2':'tr-TR' }}</td>

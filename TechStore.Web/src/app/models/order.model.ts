@@ -9,6 +9,7 @@ export interface OrderItem {
 
 export interface Order {
   id: number;
+  orderNumber: string;
   userId: number | null;
   userName: string;
   userEmail: string;
