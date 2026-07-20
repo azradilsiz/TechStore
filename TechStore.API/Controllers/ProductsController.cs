@@ -48,8 +48,21 @@ namespace TechStore.API.Controllers
 
             return Ok(new
             {
-                Message = "External products imported successfully.",
+                Message = "Dış kaynaktaki ürünler başarıyla içe aktarıldı.",
                 ImportedCount = importedCount
+            });
+        }
+
+        [HttpPost("localize-demo-products")]
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
+        public async Task<IActionResult> LocalizeDemoProducts()
+        {
+            int updatedCount = await _externalProductService.LocalizeExistingProductsAsync();
+
+            return Ok(new
+            {
+                Message = "Demo ürün bilgileri Türkçe olarak güncellendi.",
+                UpdatedCount = updatedCount
             });
         }
 
@@ -59,17 +72,17 @@ namespace TechStore.API.Controllers
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
             {
-                return BadRequest("Product name cannot be empty.");
+                return BadRequest("Ürün adı boş bırakılamaz.");
             }
 
             if (dto.Price <= 0)
             {
-                return BadRequest("Product price must be greater than zero.");
+                return BadRequest("Ürün fiyatı sıfırdan büyük olmalıdır.");
             }
 
             if (dto.Stock < 0)
             {
-                return BadRequest("Product stock cannot be negative.");
+                return BadRequest("Ürün stok miktarı negatif olamaz.");
             }
 
             ProductDto product = await _productService.CreateProductAsync(dto);
@@ -83,17 +96,17 @@ namespace TechStore.API.Controllers
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
             {
-                return BadRequest("Product name cannot be empty.");
+                return BadRequest("Ürün adı boş bırakılamaz.");
             }
 
             if (dto.Price <= 0)
             {
-                return BadRequest("Product price must be greater than zero.");
+                return BadRequest("Ürün fiyatı sıfırdan büyük olmalıdır.");
             }
 
             if (dto.Stock < 0)
             {
-                return BadRequest("Product stock cannot be negative.");
+                return BadRequest("Ürün stok miktarı negatif olamaz.");
             }
 
             bool result = await _productService.UpdateProductAsync(productId, dto);

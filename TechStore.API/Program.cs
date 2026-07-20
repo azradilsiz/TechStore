@@ -96,6 +96,21 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    try
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+        ExternalProductService externalProductService = scope.ServiceProvider
+            .GetRequiredService<ExternalProductService>();
+        await externalProductService.LocalizeExistingProductsAsync(onlyUnlocalizedDescriptions: true);
+    }
+    catch (Exception exception)
+    {
+        app.Logger.LogWarning(exception, "Demo ürünlerin Türkçeleştirilmesi sırasında bir hata oluştu.");
+    }
+}
+
 // Configure the HTTP request pipeline.
 
 if (app.Environment.IsDevelopment())

@@ -24,11 +24,11 @@ export class ForgotPasswordComponent {
     }
 
     if (!this.isEmailValid(this.email)) {
-      this.errorMessage = 'Geçerli bir email adresi girmelisin.';
+      this.errorMessage = 'Geçerli bir e-posta adresi girmelisin.';
       return;
     }
 
-    this.message = 'Bu email adresiyle kayıtlı bir hesap varsa, mail gönderme altyapısı bağlandığında şifre yenileme bağlantısı gönderilecek.';
+    this.message = 'Bu e-posta adresiyle kayıtlı bir hesap varsa, e-posta gönderme altyapısı bağlandığında şifre yenileme bağlantısı gönderilecek.';
   }
 
   private isEmailValid(email: string): boolean {

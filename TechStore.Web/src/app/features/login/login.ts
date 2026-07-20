@@ -40,7 +40,7 @@ export class LoginComponent {
     }
 
     if (!this.isEmailValid(this.loginDto.email)) {
-      this.errorMessage = 'Geçerli bir email adresi girmelisin.';
+      this.errorMessage = 'Geçerli bir e-posta adresi girmelisin.';
       return;
     }
 

@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using TechStore.API.DTOs.ExternalProducts;
 using TechStore.API.Entities;
 using TechStore.API.Repositories.Interfaces;
+using TechStore.API.Resources;
 
 namespace TechStore.API.Services
 {
@@ -34,9 +35,8 @@ namespace TechStore.API.Services
             int importedCount = 0;
 
             List<Product> existingProducts = await _productRepository.GetAllWithCategoryAsync();
-            HashSet<string> existingProductNames = existingProducts
-                .Select(product => product.Name.ToLower())
-                .ToHashSet();
+            Dictionary<string, Product> existingProductsByName = existingProducts
+                .ToDictionary(product => product.Name.ToLowerInvariant());
 
             foreach (string externalCategory in _categories)
             {
@@ -53,23 +53,31 @@ namespace TechStore.API.Services
 
                 foreach (ExternalProductDto externalProduct in response.Products)
                 {
-                    if (existingProductNames.Contains(externalProduct.Title.ToLower()))
+                    ProductTranslation? translation = ProductTranslations.Find(externalProduct.Title);
+                    string displayName = translation?.DisplayName ?? externalProduct.Title;
+                    string description = translation?.Description ?? externalProduct.Description;
+
+                    Product? existingProduct = FindExistingProduct(existingProductsByName, externalProduct.Title, displayName);
+                    if (existingProduct != null)
                     {
+                        existingProduct.Name = displayName;
+                        existingProduct.Description = description;
+                        existingProductsByName[displayName.ToLowerInvariant()] = existingProduct;
                         continue;
                     }
 
                     Product product = new Product
                     {
                         CategoryId = category.Id,
-                        Name = externalProduct.Title,
-                        Description = externalProduct.Description,
+                        Name = displayName,
+                        Description = description,
                         Price = externalProduct.Price,
                         Stock = externalProduct.Stock,
                         ImageUrl = externalProduct.Thumbnail
                     };
 
                     await _productRepository.AddAsync(product);
-                    existingProductNames.Add(product.Name.ToLower());
+                    existingProductsByName[product.Name.ToLowerInvariant()] = product;
                     importedCount++;
                 }
             }
@@ -77,6 +85,55 @@ namespace TechStore.API.Services
             await _productRepository.SaveChangesAsync();
 
             return importedCount;
+        }
+
+        public async Task<int> LocalizeExistingProductsAsync(bool onlyUnlocalizedDescriptions = false)
+        {
+            List<Product> products = await _productRepository.GetAllWithCategoryAsync();
+            int updatedCount = 0;
+
+            foreach (Product product in products)
+            {
+                ProductTranslation? translation = ProductTranslations.Find(product.Name);
+                if (translation == null ||
+                    (onlyUnlocalizedDescriptions && !LooksLikeEnglishDemoDescription(product.Description)) ||
+                    (product.Name == translation.DisplayName && product.Description == translation.Description))
+                {
+                    continue;
+                }
+
+                product.Name = translation.DisplayName;
+                product.Description = translation.Description;
+                updatedCount++;
+            }
+
+            if (updatedCount > 0)
+            {
+                await _productRepository.SaveChangesAsync();
+            }
+
+            return updatedCount;
+        }
+
+        private static bool LooksLikeEnglishDemoDescription(string description)
+        {
+            string normalizedDescription = description.TrimStart();
+            return normalizedDescription.StartsWith("The ", StringComparison.OrdinalIgnoreCase) ||
+                normalizedDescription.StartsWith("It ", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static Product? FindExistingProduct(
+            IReadOnlyDictionary<string, Product> existingProducts,
+            string sourceName,
+            string displayName)
+        {
+            if (existingProducts.TryGetValue(sourceName.ToLowerInvariant(), out Product? sourceProduct))
+            {
+                return sourceProduct;
+            }
+
+            existingProducts.TryGetValue(displayName.ToLowerInvariant(), out Product? displayProduct);
+            return displayProduct;
         }
 
         private async Task<Category> GetOrCreateCategoryAsync(string categoryName)

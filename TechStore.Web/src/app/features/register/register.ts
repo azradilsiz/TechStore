@@ -43,7 +43,7 @@ export class RegisterComponent {
     }
 
     if (!this.isEmailValid(this.registerDto.email)) {
-      this.errorMessage = 'Geçerli bir email adresi girmelisin.';
+      this.errorMessage = 'Geçerli bir e-posta adresi girmelisin.';
       return;
     }
 
@@ -61,7 +61,7 @@ export class RegisterComponent {
       },
       error: () => {
         this.isLoading = false;
-        this.errorMessage = 'Kayıt oluşturulurken bir hata oluştu. Bu email daha önce kullanılmış olabilir.';
+        this.errorMessage = 'Kayıt oluşturulurken bir hata oluştu. Bu e-posta adresi daha önce kullanılmış olabilir.';
         this.changeDetector.detectChanges();
       }
     });
