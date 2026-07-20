@@ -1,3 +1,4 @@
+using TechStore.API.Constants;
 using TechStore.API.DTOs.Carts;
 using TechStore.API.Entities;
 using TechStore.API.Repositories.Interfaces;
@@ -25,8 +26,14 @@ namespace TechStore.API.Services
             return MapCartToDto(cart);
         }
 
-        public async Task<CartDto> AddItemToCartAsync(int userId, AddCartItemDto dto)
+        public async Task<CartDto?> AddItemToCartAsync(int userId, AddCartItemDto dto)
         {
+            Product? product = await _cartRepository.GetProductByIdAsync(dto.ProductId);
+            if (product == null || product.Stock <= 0)
+            {
+                return null;
+            }
+
             Cart? cart = await _cartRepository.GetByUserIdWithItemsAsync(userId);
 
             if (cart == null)
@@ -42,6 +49,13 @@ namespace TechStore.API.Services
 
             CartItem? existingItem = cart.CartItems
                 .FirstOrDefault(cartItem => cartItem.ProductId == dto.ProductId);
+
+            int requestedQuantity = (existingItem?.Quantity ?? 0) + dto.Quantity;
+            if (requestedQuantity > product.Stock ||
+                requestedQuantity > ShoppingRules.MaxQuantityPerProduct)
+            {
+                return null;
+            }
 
             if (existingItem != null)
             {
@@ -64,20 +78,28 @@ namespace TechStore.API.Services
             return (await GetCartByUserIdAsync(userId))!;
         }
 
-        public async Task<bool> UpdateCartItemAsync(int userId, int cartItemId, UpdateCartItemDto dto)
+        public async Task<CartUpdateResult> UpdateCartItemAsync(int userId, int cartItemId, UpdateCartItemDto dto)
         {
             CartItem? cartItem = await _cartRepository.GetCartItemByIdAsync(cartItemId);
 
             if (cartItem == null || cartItem.Cart?.UserId != userId)
             {
-                return false;
+                return CartUpdateResult.NotFound;
+            }
+
+            if (cartItem.Product == null ||
+                cartItem.Product.IsDeleted ||
+                dto.Quantity > cartItem.Product.Stock ||
+                dto.Quantity > ShoppingRules.MaxQuantityPerProduct)
+            {
+                return CartUpdateResult.InsufficientStock;
             }
 
             cartItem.Quantity = dto.Quantity;
 
             await _cartRepository.SaveChangesAsync();
 
-            return true;
+            return CartUpdateResult.Success;
         }
 
         public async Task<bool> RemoveCartItemAsync(int userId, int cartItemId)
@@ -107,6 +129,7 @@ namespace TechStore.API.Services
                     ProductId = cartItem.ProductId,
                     ProductName = cartItem.Product != null ? cartItem.Product.Name : string.Empty,
                     Quantity = cartItem.Quantity,
+                    Stock = cartItem.Product?.Stock ?? 0,
                     UnitPrice = cartItem.Product != null ? cartItem.Product.Price : 0,
                     TotalPrice = cartItem.Product != null ? cartItem.Product.Price * cartItem.Quantity : 0
                 }).ToList(),
@@ -114,5 +137,12 @@ namespace TechStore.API.Services
                     cartItem.Product != null ? cartItem.Product.Price * cartItem.Quantity : 0)
             };
         }
+    }
+
+    public enum CartUpdateResult
+    {
+        Success,
+        NotFound,
+        InsufficientStock
     }
 }

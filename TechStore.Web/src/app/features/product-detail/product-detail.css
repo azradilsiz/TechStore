@@ -67,8 +67,25 @@
   margin: 26px 0;
 }
 
-.detail-meta span {
-  color: #475569;
+.stock-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stock-label.low-stock {
+  padding: 5px 10px;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.stock-label.out-of-stock {
+  padding: 5px 10px;
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .detail-meta strong {
@@ -86,8 +103,14 @@
   cursor: pointer;
 }
 
-.detail-info button:hover {
+.detail-info button:hover:not(:disabled) {
   background: #0e7490;
+}
+
+.detail-info button:disabled {
+  background: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
 }
 
 .state-box {

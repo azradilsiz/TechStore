@@ -75,7 +75,12 @@
         <p>{{ product.description }}</p>
 
         <div class="meta-row">
-          <span>Stok: {{ product.stock }}</span>
+          <span
+            class="stock-label"
+            [class.low-stock]="product.stock > 0 && product.stock <= 10"
+            [class.out-of-stock]="product.stock <= 0">
+            {{ getStockLabel(product.stock) }}
+          </span>
         </div>
 
         <div class="product-footer">
@@ -83,8 +88,11 @@
 
           <div class="product-actions">
             <a [routerLink]="['/products', product.id]">Detayları Gör</a>
-            <button type="button" (click)="addToCart(product)">
-              Sepete Ekle
+            <button
+              type="button"
+              [disabled]="product.stock <= 0"
+              (click)="addToCart(product)">
+              {{ product.stock > 0 ? 'Sepete Ekle' : 'Tükendi' }}
             </button>
           </div>
         </div>

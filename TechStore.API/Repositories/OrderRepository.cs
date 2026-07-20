@@ -51,7 +51,7 @@ namespace TechStore.API.Repositories
         public async Task<Dictionary<int, Product>> GetProductsByIdsAsync(List<int> productIds)
         {
             return await _context.Products
-                .Where(product => productIds.Contains(product.Id))
+                .Where(product => productIds.Contains(product.Id) && !product.IsDeleted)
                 .ToDictionaryAsync(product => product.Id);
         }
 

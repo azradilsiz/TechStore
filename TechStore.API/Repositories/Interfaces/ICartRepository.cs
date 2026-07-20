@@ -10,6 +10,8 @@ namespace TechStore.API.Repositories.Interfaces
 
         Task<CartItem?> GetCartItemByIdAsync(int cartItemId);
 
+        Task<Product?> GetProductByIdAsync(int productId);
+
         Task AddCartAsync(Cart cart);
 
         Task AddCartItemAsync(CartItem cartItem);

@@ -231,9 +231,11 @@ export class CheckoutComponent implements OnInit {
         this.successMessage = 'Siparişiniz ve ödeme bilginiz başarıyla oluşturuldu.';
         this.changeDetector.detectChanges();
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
-        this.errorMessage = 'Sipariş veya ödeme bilgisi oluşturulurken bir hata oluştu.';
+        this.errorMessage = error.status === 400
+          ? 'Sepetindeki bir ürünün stoğu yetersiz veya teslimat adresi geçersiz.'
+          : 'Sipariş veya ödeme bilgisi oluşturulurken bir hata oluştu.';
         this.changeDetector.detectChanges();
       }
     });
@@ -273,9 +275,11 @@ export class CheckoutComponent implements OnInit {
         this.successMessage = 'Misafir siparişiniz ve ödeme bilginiz başarıyla oluşturuldu.';
         this.changeDetector.detectChanges();
       },
-      error: () => {
+      error: (error) => {
         this.isLoading = false;
-        this.errorMessage = 'Misafir sipariş oluşturulurken bir hata oluştu.';
+        this.errorMessage = error.status === 400
+          ? 'Sepetindeki bir ürünün stoğu sipariş için yeterli değil.'
+          : 'Misafir sipariş oluşturulurken bir hata oluştu.';
         this.changeDetector.detectChanges();
       }
     });

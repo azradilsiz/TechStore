@@ -6,6 +6,7 @@ import { Product } from '../../models/product.model';
   providedIn: 'root'
 })
 export class LocalCartService {
+  readonly maxQuantityPerProduct = 10;
   private readonly storageKey = 'techStoreGuestCart';
 
   getCart(): Cart {
@@ -24,14 +25,25 @@ export class LocalCartService {
     const existingItem = items.find((item) => item.productId === product.id);
 
     if (existingItem) {
+      existingItem.stock = product.stock;
+      const allowedQuantity = Math.min(product.stock, this.maxQuantityPerProduct);
+      if (existingItem.quantity + quantity > allowedQuantity) {
+        return this.getCart();
+      }
       existingItem.quantity += quantity;
       existingItem.totalPrice = this.roundPrice(existingItem.quantity * existingItem.unitPrice);
     } else {
+      const allowedQuantity = Math.min(product.stock, this.maxQuantityPerProduct);
+      if (quantity > allowedQuantity) {
+        return this.getCart();
+      }
+
       items.push({
         id: product.id,
         productId: product.id,
         productName: product.name,
         quantity,
+        stock: product.stock,
         unitPrice: product.price,
         totalPrice: this.roundPrice(product.price * quantity)
       });
@@ -47,8 +59,10 @@ export class LocalCartService {
       .map((item) => item.id === cartItemId
         ? {
             ...item,
-            quantity,
-            totalPrice: this.roundPrice(item.unitPrice * quantity)
+            quantity: Math.min(quantity, item.stock ?? quantity, this.maxQuantityPerProduct),
+            totalPrice: this.roundPrice(
+              item.unitPrice * Math.min(quantity, item.stock ?? quantity, this.maxQuantityPerProduct)
+            )
           }
         : item);
 
@@ -77,7 +91,19 @@ export class LocalCartService {
     }
 
     try {
-      return JSON.parse(storedCart) as CartItem[];
+      return (JSON.parse(storedCart) as CartItem[]).map((item) => {
+        const quantity = Math.min(
+          item.quantity,
+          item.stock ?? item.quantity,
+          this.maxQuantityPerProduct
+        );
+
+        return {
+          ...item,
+          quantity,
+          totalPrice: this.roundPrice(item.unitPrice * quantity)
+        };
+      });
     } catch {
       localStorage.removeItem(this.storageKey);
       return [];

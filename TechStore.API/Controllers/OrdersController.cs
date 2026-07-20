@@ -231,6 +231,12 @@ namespace TechStore.API.Controllers
                 return BadRequest("Status cannot be empty.");
             }
 
+            string[] validStatuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
+            if (!validStatuses.Contains(dto.Status))
+            {
+                return BadRequest("Order status is invalid.");
+            }
+
             bool result = await _orderService.UpdateOrderAsync(orderId, dto);
 
             if (!result)

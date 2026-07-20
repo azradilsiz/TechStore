@@ -17,6 +17,7 @@ type ProductPageStatus = 'loading' | 'success' | 'empty' | 'error';
   styleUrl: './products.css'
 })
 export class ProductsComponent implements OnInit {
+  readonly maxQuantityPerProduct = 10;
   products: Product[] = [];
   status: ProductPageStatus = 'loading';
   errorMessage = '';
@@ -110,6 +111,14 @@ export class ProductsComponent implements OnInit {
     return categoryLabels[this.getCategoryKey(categoryName)] ?? categoryName;
   }
 
+  getStockLabel(stock: number): string {
+    if (stock <= 0) {
+      return 'Tükendi';
+    }
+
+    return stock <= 10 ? `Son ${stock} ürün` : '';
+  }
+
   private getCategoryKey(categoryName: string): string {
     const normalizedCategoryName = categoryName.trim().toLocaleLowerCase('tr-TR');
     const categoryKeys: Record<string, string> = {
@@ -135,9 +144,23 @@ export class ProductsComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
+    if (product.stock <= 0) {
+      this.errorMessage = 'Bu ürün stokta bulunmuyor.';
+      this.changeDetector.detectChanges();
+      return;
+    }
+
     const currentUserId = this.authService.getCurrentUserId();
 
     if (!currentUserId) {
+      const currentQuantity = this.localCartService.getCart().items
+        .find((item) => item.productId === product.id)?.quantity ?? 0;
+      if (currentQuantity >= Math.min(product.stock, this.maxQuantityPerProduct)) {
+        this.errorMessage = 'Bu ürün için ekleyebileceğin en yüksek adede ulaştın.';
+        this.changeDetector.detectChanges();
+        return;
+      }
+
       this.localCartService.addItem(product);
       this.successMessage = `${product.name} sepete eklendi.`;
       this.changeDetector.detectChanges();
@@ -152,8 +175,10 @@ export class ProductsComponent implements OnInit {
         this.successMessage = `${product.name} sepete eklendi.`;
         this.changeDetector.detectChanges();
       },
-      error: () => {
-        this.errorMessage = 'Ürün sepete eklenirken bir hata oluştu.';
+      error: (error) => {
+        this.errorMessage = error.status === 400
+          ? 'Ürün stokta yok veya ürün başına en fazla 10 adet ekleyebilirsin.'
+          : 'Ürün sepete eklenirken bir hata oluştu.';
         this.changeDetector.detectChanges();
       }
     });

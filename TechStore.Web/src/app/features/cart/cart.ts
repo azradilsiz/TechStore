@@ -14,6 +14,7 @@ import { Cart } from '../../models/cart.model';
   styleUrl: './cart.css'
 })
 export class CartComponent implements OnInit {
+  readonly maxQuantityPerProduct = 10;
   cart: Cart | null = null;
   isLoading = false;
   errorMessage = '';
@@ -56,7 +57,12 @@ export class CartComponent implements OnInit {
     });
   }
 
-  increaseQuantity(cartItemId: number, quantity: number): void {
+  increaseQuantity(cartItemId: number, quantity: number, stock: number): void {
+    if (quantity >= Math.min(stock, this.maxQuantityPerProduct)) {
+      this.errorMessage = 'Bu ürün için ekleyebileceğin en yüksek adede ulaştın.';
+      return;
+    }
+
     this.updateQuantity(cartItemId, quantity + 1);
   }
 
@@ -78,8 +84,10 @@ export class CartComponent implements OnInit {
       next: () => {
         this.getCart();
       },
-      error: () => {
-        this.errorMessage = 'Ürün adedi güncellenirken bir hata oluştu.';
+      error: (error) => {
+        this.errorMessage = error.status === 400
+          ? 'İstenen adet stok miktarını veya ürün başına 10 adet sınırını aşıyor.'
+          : 'Ürün adedi güncellenirken bir hata oluştu.';
         this.changeDetector.detectChanges();
       }
     });

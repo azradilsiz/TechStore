@@ -16,6 +16,7 @@ type ProductDetailStatus = 'loading' | 'success' | 'error';
   styleUrl: './product-detail.css'
 })
 export class ProductDetailComponent implements OnInit {
+  readonly maxQuantityPerProduct = 10;
   product: Product | null = null;
   status: ProductDetailStatus = 'loading';
   errorMessage = '';
@@ -73,6 +74,14 @@ export class ProductDetailComponent implements OnInit {
     return categoryLabels[categoryName] ?? categoryName;
   }
 
+  getStockLabel(stock: number): string {
+    if (stock <= 0) {
+      return 'Tükendi';
+    }
+
+    return stock <= 10 ? `Son ${stock} ürün` : '';
+  }
+
   addToCart(): void {
     if (!this.product) {
       return;
@@ -81,9 +90,23 @@ export class ProductDetailComponent implements OnInit {
     this.successMessage = '';
     this.errorMessage = '';
 
+    if (this.product.stock <= 0) {
+      this.errorMessage = 'Bu ürün stokta bulunmuyor.';
+      this.changeDetector.detectChanges();
+      return;
+    }
+
     const currentUserId = this.authService.getCurrentUserId();
 
     if (!currentUserId) {
+      const currentQuantity = this.localCartService.getCart().items
+        .find((item) => item.productId === this.product!.id)?.quantity ?? 0;
+      if (currentQuantity >= Math.min(this.product.stock, this.maxQuantityPerProduct)) {
+        this.errorMessage = 'Bu ürün için ekleyebileceğin en yüksek adede ulaştın.';
+        this.changeDetector.detectChanges();
+        return;
+      }
+
       this.localCartService.addItem(this.product);
       this.successMessage = `${this.product.name} sepete eklendi.`;
       this.changeDetector.detectChanges();
@@ -98,8 +121,10 @@ export class ProductDetailComponent implements OnInit {
         this.successMessage = `${this.product?.name} sepete eklendi.`;
         this.changeDetector.detectChanges();
       },
-      error: () => {
-        this.errorMessage = 'Ürün sepete eklenirken bir hata oluştu.';
+      error: (error) => {
+        this.errorMessage = error.status === 400
+          ? 'Ürün stokta yok veya ürün başına en fazla 10 adet ekleyebilirsin.'
+          : 'Ürün sepete eklenirken bir hata oluştu.';
         this.changeDetector.detectChanges();
       }
     });

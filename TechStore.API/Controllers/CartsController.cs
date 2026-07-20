@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using TechStore.API.Constants;
 using TechStore.API.DTOs.Carts;
 using TechStore.API.Helpers;
 using TechStore.API.Services;
@@ -61,7 +62,17 @@ namespace TechStore.API.Controllers
                 return BadRequest("Quantity must be greater than zero.");
             }
 
-            CartDto cart = await _cartService.AddItemToCartAsync(currentUserId.Value, dto);
+            if (dto.Quantity > ShoppingRules.MaxQuantityPerProduct)
+            {
+                return BadRequest("A product can be added at most 10 times.");
+            }
+
+            CartDto? cart = await _cartService.AddItemToCartAsync(currentUserId.Value, dto);
+
+            if (cart == null)
+            {
+                return BadRequest("Product is unavailable or requested quantity exceeds stock.");
+            }
 
             return Ok(cart);
         }
@@ -80,11 +91,21 @@ namespace TechStore.API.Controllers
                 return BadRequest("Quantity must be greater than zero.");
             }
 
-            bool result = await _cartService.UpdateCartItemAsync(currentUserId.Value, cartItemId, dto);
+            if (dto.Quantity > ShoppingRules.MaxQuantityPerProduct)
+            {
+                return BadRequest("A product can be added at most 10 times.");
+            }
 
-            if (!result)
+            CartUpdateResult result = await _cartService.UpdateCartItemAsync(currentUserId.Value, cartItemId, dto);
+
+            if (result == CartUpdateResult.NotFound)
             {
                 return NotFound();
+            }
+
+            if (result == CartUpdateResult.InsufficientStock)
+            {
+                return BadRequest("Requested quantity exceeds stock.");
             }
 
             return NoContent();

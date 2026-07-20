@@ -33,7 +33,14 @@ namespace TechStore.API.Repositories
         {
             return await _context.CartItems
                 .Include(cartItem => cartItem.Cart)
+                .Include(cartItem => cartItem.Product)
                 .FirstOrDefaultAsync(cartItem => cartItem.Id == cartItemId);
+        }
+
+        public async Task<Product?> GetProductByIdAsync(int productId)
+        {
+            return await _context.Products.FirstOrDefaultAsync(product =>
+                product.Id == productId && !product.IsDeleted);
         }
 
         public async Task AddCartAsync(Cart cart)

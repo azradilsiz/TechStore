@@ -39,7 +39,8 @@
           <button
             type="button"
             aria-label="Adedi artır"
-            (click)="increaseQuantity(item.id, item.quantity)">
+            [disabled]="item.quantity >= item.stock || item.quantity >= maxQuantityPerProduct"
+            (click)="increaseQuantity(item.id, item.quantity, item.stock)">
             +
           </button>
         </div>

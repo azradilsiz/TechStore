@@ -20,7 +20,12 @@
       <p class="description">{{ product.description }}</p>
 
       <div class="detail-meta">
-        <span>Stok: {{ product.stock }}</span>
+        <span
+          class="stock-label"
+          [class.low-stock]="product.stock > 0 && product.stock <= 10"
+          [class.out-of-stock]="product.stock <= 0">
+          {{ getStockLabel(product.stock) }}
+        </span>
         <strong>{{ product.price }} TL</strong>
       </div>
 
@@ -28,8 +33,11 @@
         {{ successMessage }}
       </div>
 
-      <button type="button" (click)="addToCart()">
-        Sepete Ekle
+      <button
+        type="button"
+        [disabled]="product.stock <= 0"
+        (click)="addToCart()">
+        {{ product.stock > 0 ? 'Sepete Ekle' : 'Tükendi' }}
       </button>
     </div>
   </div>

@@ -9,6 +9,7 @@
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
         public string Status { get; set; } = string.Empty;
+        public bool IsStockDeducted { get; set; }
         public string GuestFullName { get; set; } = string.Empty;
         public string GuestEmail { get; set; } = string.Empty;
         public string GuestPhone { get; set; } = string.Empty;
